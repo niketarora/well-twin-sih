@@ -12,6 +12,8 @@ from app.api.v1 import (
     recommendations,
     work_orders,
     twin,
+    sos,
+    incidents,
 )
 
 api_router = APIRouter()
@@ -28,3 +30,5 @@ api_router.include_router(insights.router, tags=["AI Insights"])
 api_router.include_router(recommendations.router, tags=["Recommendations"])
 api_router.include_router(work_orders.router, tags=["Work Orders"])
 api_router.include_router(twin.router, tags=["Digital Twin"])
+api_router.include_router(sos.router, tags=["Manual SOS"])
+api_router.include_router(incidents.router, tags=["Incidents"])

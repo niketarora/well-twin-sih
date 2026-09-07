@@ -15,6 +15,26 @@ from app.models.anomaly import Anomaly
 from app.models.insight import AiInsight
 from app.models.recommendation import Recommendation
 from app.models.work_order import WorkOrder
+from app.models.contact import Contact
+
+async def seed_demo_contacts_if_missing(session) -> None:
+    """Ensures the demo notification-recipient contacts exist even on a database that was
+    already seeded with the BW-017 well scenario before the Manual SOS feature was added -
+    otherwise an already-seeded dev DB would silently have zero SOS recipients."""
+    result = await session.execute(select(Contact))
+    if result.scalars().first():
+        return
+    logger.info("Seeding demo notification contacts...")
+    contacts = [
+        Contact(name="Demo Security Desk", role="SECURITY", phone_number="+15550000101", active=True, notes="Demo/test contact - not a real responder."),
+        Contact(name="Demo Medical Officer", role="MEDICAL", phone_number="+15550000102", active=True, notes="Demo/test contact - not a real responder."),
+        Contact(name="Demo Safety Officer", role="SAFETY", phone_number="+15550000103", active=True, notes="Demo/test contact - not a real responder."),
+        Contact(name="Demo Field Engineer", role="FIELD_ENGINEER", phone_number="+15550000104", active=True, notes="Demo/test contact - not a real responder."),
+        Contact(name="Demo Shift Supervisor", role="SHIFT_SUPERVISOR", phone_number="+15550000105", active=True, notes="Demo/test contact - not a real responder."),
+    ]
+    session.add_all(contacts)
+    await session.commit()
+    logger.info("Successfully seeded demo notification contacts.")
 
 async def seed_database():
     await init_db()
@@ -25,6 +45,7 @@ async def seed_database():
         existing = result.scalar_one_or_none()
         if existing:
             logger.info("Database already seeded with BW-017. Skipping.")
+            await seed_demo_contacts_if_missing(session)
             return
 
         logger.info("Seeding database with deterministic Baghewala Well BW-017 scenario...")
@@ -417,9 +438,13 @@ async def seed_database():
             related_recommendation_id=None
         )
         session.add_all([wo1, wo2])
-
         await session.commit()
         logger.info("Successfully seeded database with all 10 domain entities for Well BW-017.")
+
+        # 11. Notification Recipient Contacts (Manual SOS routing targets). Real recipient
+        # numbers must never be hardcoded in source - only placeholder/demo numbers (the
+        # reserved-for-fictional-use "555" exchange) are seeded here.
+        await seed_demo_contacts_if_missing(session)
 
 if __name__ == "__main__":
     asyncio.run(seed_database())

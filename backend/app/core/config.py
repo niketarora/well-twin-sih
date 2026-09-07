@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     # Primary Database URL: uses SUPABASE_DB_URL if set, else falls back to DATABASE_URL or SQLite
     DATABASE_URL: str = "sqlite+aiosqlite:///./well_twin.db"
 
+    # Notification provider mode for Manual SOS / Incident alerting.
+    # "mock" (default): no real SMS/voice call is ever placed - safe for local dev and tests.
+    # "twilio": reserved for a later phase; not implemented yet.
+    NOTIFICATION_MODE: str = "mock"
+
     @property
     def async_database_url(self) -> str:
         if self.SUPABASE_DB_URL:

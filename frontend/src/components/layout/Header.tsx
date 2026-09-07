@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Menu, Sun, Moon, Wifi, Activity } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { mockWell, mockFieldWells } from '../../mock';
+import { EmergencySosControl } from '../sos/EmergencySosControl';
 
 export const Header: React.FC = () => {
   const { toggleSidebar, theme, toggleTheme, selectedWellId } = useUIStore();
@@ -111,6 +112,9 @@ export const Header: React.FC = () => {
 
       {/* Right-hand side controls & Theme toggle */}
       <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        {/* Emergency Manual SOS - accessible from every page, independent of Digital Twin */}
+        <EmergencySosControl />
+
         {/* Theme Toggle Button (Light ☀ / Dark ☾) */}
         <button
           type="button"
