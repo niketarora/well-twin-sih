@@ -22,14 +22,13 @@ interface UIState {
 const getInitialTheme = (): ThemeMode => {
   if (typeof window === 'undefined') return 'light';
   const saved = localStorage.getItem('well_twin_theme') as ThemeMode | null;
-  if (saved === 'light' || saved === 'dark') {
-    document.documentElement.classList.toggle('dark', saved === 'dark');
-    return saved;
+  if (saved === 'dark') {
+    document.documentElement.classList.add('dark');
+    return 'dark';
   }
-  const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const initial = systemPrefersDark ? 'dark' : 'light';
-  document.documentElement.classList.toggle('dark', initial === 'dark');
-  return initial;
+  // By default, always start in light mode for new users
+  document.documentElement.classList.remove('dark');
+  return 'light';
 };
 
 export const useUIStore = create<UIState>((set) => ({
