@@ -1,0 +1,58 @@
+import { Anomaly } from '../types';
+
+export const mockAnomalies: Anomaly[] = [
+  {
+    id: 'ANOM-2026-088',
+    score: 84,
+    severity: 'critical',
+    affectedMetric: 'SRP Barrel Fillage & Downstroke Load',
+    timeWindow: 'Past 7 Days (Accelerated past 6h)',
+    status: 'Open',
+    title: 'Downhole Traveling Valve Fluid Pound Divergence',
+    evidence: [
+      'Pump fillage dropped from 88.2% to 84.6% (deviation -3.6 pt from expected curve)',
+      'Load collapse to 21.2 kN identified at 2.80 m displacement on the dyno card',
+      'Section 2 rod fatigue cyclic Goodman ratio spiked to 81.5% of endurance limit',
+      'In-situ viscosity increased by +3.5 cP due to -0.04 °C/h thermal front cooling',
+    ],
+    possibleCause: 'Heavy-oil viscosity increase causing lower liquid intake velocity through standing valve, compounded by incomplete barrel fillage and minor gas interference.',
+    relatedAlertId: 'ALM-4412',
+    impact: 'Elevated rod fatigue and accelerated mechanical wear on tapered rod couplings.',
+    recommendedAction: 'Reduce VFD stroke speed from 8.4 to 8.0 SPM immediately to match downhole inflow refill rate.',
+  },
+  {
+    id: 'ANOM-2026-081',
+    score: 62,
+    severity: 'warning',
+    affectedMetric: 'Bottomhole Temperature (BHT)',
+    timeWindow: 'Past 29 Days',
+    status: 'Investigating',
+    title: 'Conductive Thermal Bleed to Overburden Sand',
+    evidence: [
+      'BHT declining at steady -0.040 °C/h compared to baseline -0.022 °C/h expected',
+      'DTS fiber survey indicates 14.8% conductive heat transfer across bounding shale caprock',
+      'Steam chamber radius stabilized at 18.4 m without further lateral expansion',
+    ],
+    possibleCause: 'Caprock boundary thermal diffusion higher than initial static geologic core model.',
+    relatedAlertId: 'ALM-4408',
+    impact: 'Shortens effective CSS production window by approximately 8 to 12 days before economic floor.',
+    recommendedAction: 'Calibrate PINN thermal diffusivity parameter and prepare early slot for Cycle 5 generator.',
+  },
+  {
+    id: 'ANOM-2026-074',
+    score: 41,
+    severity: 'info',
+    affectedMetric: 'Emulsion Viscosity Ratio',
+    timeWindow: 'Past 14 Days',
+    status: 'Open',
+    title: 'Water Cut Condensate Inversion Fringe',
+    evidence: [
+      'Water cut increased from 36.0% to 42.4% over 14 days',
+      'Emulsion stability index held at Tier 2 despite continuous 45 ppm demulsifier injection',
+    ],
+    possibleCause: 'Steam condensate breakthrough mixing with heavy bitumen in high-shear choke orifice.',
+    relatedAlertId: 'ALM-4399',
+    impact: 'Increased flowline pressure drop (+0.8 bar variance across test separator).',
+    recommendedAction: 'Review chemical injection dosage and inspect skid 03 separator heater treaters.',
+  },
+];

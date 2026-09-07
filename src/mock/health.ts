@@ -1,0 +1,50 @@
+import { WellHealth } from '../types';
+
+export const mockWellHealth: WellHealth = {
+  score: 78,
+  status: 'Attention advised',
+  description: 'Producing within envelope on CSS Cycle 4. One lift-side anomaly (fluid pound inception @ 2.80m) and a slow reservoir cooling trend (-0.04 °C/h) are actively tracked.',
+  dominantConcern: 'SRP barrel fillage declining (84.6%), driving section-2 rod stress and fluid pound.',
+  subsystems: [
+    {
+      id: 'reservoir',
+      name: 'Reservoir Subsystem',
+      score: 86,
+      weight: 0.25,
+      status: 'Watch',
+      color: '#D49A3A',
+      note: 'Cooling −0.04 °C/h · in-situ viscosity 84 cP',
+      dominantFactor: 'Conductive heat loss to bounding shale formation',
+    },
+    {
+      id: 'wellbore',
+      name: 'Wellbore & Inflow',
+      score: 96,
+      weight: 0.25,
+      status: 'Normal',
+      color: '#3FA66B',
+      note: 'Stable inflow · zero gas lock · clean slotted liner',
+      dominantFactor: 'Steady multiphase slug/bubbly flow regime',
+    },
+    {
+      id: 'srp',
+      name: 'Artificial Lift (SRP)',
+      score: 61,
+      weight: 0.30,
+      status: 'Critical',
+      color: '#D95C5C',
+      note: 'Fluid pound @ 2.80m downstroke · 84.6% fillage',
+      dominantFactor: 'Downstroke load collapse and taper stress ratio 81.5%',
+    },
+    {
+      id: 'surface',
+      name: 'Surface & Gathering',
+      score: 94,
+      weight: 0.20,
+      status: 'Normal',
+      color: '#3FA66B',
+      note: 'WHP 18.4 bar · within safe envelope · test skid 03',
+      dominantFactor: 'Stable header backpressure and manifold RTD',
+    },
+  ],
+};
