@@ -45,10 +45,17 @@ frontend/dist/
 # Extracted UI artifacts
 docs/UI designs/extracted/
 
-# Python / Backend (future)
+# Python / Backend
 __pycache__/
 *.py[cod]
 *$py.class
 .venv/
 env/
 venv/
+backend/venv/
+backend/.env
+frontend/.env
+*.db
+*.sqlite*
+.pytest_cache/
+
