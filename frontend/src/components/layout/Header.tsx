@@ -85,11 +85,6 @@ export const Header: React.FC = () => {
 
       {/* Right-hand side controls & Theme toggle */}
       <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-        {/* Synthetic Demo Data Pill */}
-        <div className="hidden sm:inline-flex text-[9.5px] font-semibold tracking-wider uppercase text-petroleum bg-petroleum-tint border border-petroleum/40 rounded px-2 py-0.5">
-          Synthetic Demo Data
-        </div>
-
         {/* Theme Toggle Button (Light ☀ / Dark ☾) */}
         <button
           type="button"
