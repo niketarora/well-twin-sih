@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronDown, ChevronRight, Download, Filter, Maximize2, Minimize2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Download, Filter, Maximize2, Minimize2, Sliders } from 'lucide-react';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { StatusBadge } from '../components/ui/StatusBadge';
+import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { Sparkline } from '../components/ui/Sparkline';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { telemetryService } from '../services';
@@ -63,7 +64,7 @@ export const WellStatePage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <SectionHeader
         title="Well State Parameter Matrix"
         subtitle="Engineering parameters grouped by subsurface and surface subsystems, mapped continuously against normal design envelopes."
@@ -72,21 +73,21 @@ export const WellStatePage: React.FC = () => {
             <button
               type="button"
               onClick={expandAll}
-              className="h-9 px-3 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-medium transition-colors"
+              className="h-8 px-3 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-medium transition-colors shadow-subtle"
             >
               Expand All
             </button>
             <button
               type="button"
               onClick={collapseAll}
-              className="h-9 px-3 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-medium transition-colors"
+              className="h-8 px-3 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-medium transition-colors shadow-subtle"
             >
               Collapse All
             </button>
             <button
               type="button"
               onClick={() => alert('Exporting complete Well State matrix (.csv)...')}
-              className="h-9 px-3.5 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold tracking-wide flex items-center gap-1.5 transition-colors shadow-sm"
+              className="h-8 px-3.5 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold tracking-wide flex items-center gap-1.5 transition-colors shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
@@ -98,37 +99,49 @@ export const WellStatePage: React.FC = () => {
       {/* Top Parameter Summary Strip */}
       <div className="bg-surface border border-border rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-4 shadow-subtle">
         <div className="flex flex-col">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted">Bottomhole Temp</span>
-          <span className="font-mono text-xl font-semibold text-ink mt-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase font-semibold text-ink-muted">Bottomhole Temp</span>
+            <DataProvenanceBadge type="OBSERVED" size="sm" />
+          </div>
+          <span className="font-mono text-xl font-bold text-ink mt-1">
             214.8 <span className="text-xs text-ink-muted">°C</span>
           </span>
           <span className="text-[11px] text-ink-muted">Thermal front ~18.4 m</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted">In-Situ Viscosity</span>
-          <span className="font-mono text-xl font-semibold text-status-warn mt-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase font-semibold text-ink-muted">In-Situ Viscosity</span>
+            <DataProvenanceBadge type="ESTIMATED" size="sm" />
+          </div>
+          <span className="font-mono text-xl font-bold text-status-warn mt-1">
             84.0 <span className="text-xs text-ink-muted">cP</span>
           </span>
           <span className="text-[11px] text-ink-muted">Cold baseline 8,500 cP</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted">Cycle 4 Net Yield</span>
-          <span className="font-mono text-xl font-semibold text-ink mt-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase font-semibold text-ink-muted">Cycle 4 Net Yield</span>
+            <DataProvenanceBadge type="ACTUAL" size="sm" />
+          </div>
+          <span className="font-mono text-xl font-bold text-ink mt-1">
             184.2 <span className="text-xs text-ink-muted">BOPD</span>
           </span>
           <span className="text-[11px] text-ink-muted">WC 42.4 % · GOR 14.8 Sm³/m³</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted">Instantaneous OSR</span>
-          <span className="font-mono text-xl font-semibold text-status-green mt-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase font-semibold text-ink-muted">Instantaneous OSR</span>
+            <DataProvenanceBadge type="ESTIMATED" size="sm" />
+          </div>
+          <span className="font-mono text-xl font-bold text-status-green mt-1">
             0.39 <span className="text-xs text-ink-muted">m³/t</span>
           </span>
-          <span className="text-[11px] text-ink-muted">+0.21 above economic cutoff floor</span>
+          <span className="text-[11px] text-ink-muted">+0.21 above economic floor</span>
         </div>
       </div>
 
       {/* Subsystem Parameter Matrix Tables */}
-      <div className="space-y-4">
+      <div className="space-y-3.5">
         {groups.map((group) => {
           const isOpen = !!openGroups[group.id];
           return (
@@ -140,7 +153,7 @@ export const WellStatePage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => toggleGroup(group.id)}
-                className="w-full flex items-center justify-between px-5 py-3.5 bg-surface hover:bg-surface-secondary/70 transition-colors border-b border-border text-left"
+                className="w-full flex items-center justify-between px-5 py-3 bg-surface hover:bg-surface-secondary/70 transition-colors border-b border-border text-left"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-ink-muted">
@@ -182,13 +195,13 @@ export const WellStatePage: React.FC = () => {
                       {group.rows.map((row) => (
                         <tr
                           key={row.key}
-                          className="hover:bg-canvas/80 transition-colors"
+                          className="hover:bg-canvas-subtle transition-colors"
                         >
                           <td className="py-2.5 px-5">
                             <div className="font-medium text-ink">{row.name}</div>
                             <div className="text-[11px] text-ink-muted mt-0.5">{row.sub}</div>
                           </td>
-                          <td className="py-2.5 px-4 text-right font-mono font-medium text-sm text-ink whitespace-nowrap">
+                          <td className="py-2.5 px-4 text-right font-mono font-semibold text-sm text-ink whitespace-nowrap">
                             {row.value}
                           </td>
                           <td className="py-2.5 px-3 font-mono text-ink-muted text-[11px] whitespace-nowrap">
@@ -203,10 +216,10 @@ export const WellStatePage: React.FC = () => {
                                 data={getSparklineData(row.key, row.dir)}
                                 color={
                                   row.dir === 'bad'
-                                    ? '#D95C5C'
+                                    ? 'var(--status-crit)'
                                     : row.dir === 'good'
-                                    ? '#3FA66B'
-                                    : '#8B949E'
+                                    ? 'var(--status-green)'
+                                    : 'var(--ink-muted)'
                                 }
                               />
                               <span

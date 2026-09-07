@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FileSpreadsheet, Plus, CheckCircle2, Clock, Wrench, ChevronRight, User, Calendar } from 'lucide-react';
+import { FileSpreadsheet, Plus, CheckCircle2, Clock, Wrench, ChevronRight, User, Calendar, AlertTriangle, Lightbulb, CheckSquare } from 'lucide-react';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { Modal } from '../components/ui/Modal';
+import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { EmptyState } from '../components/ui/EmptyState';
 import { useWorkOrderStore } from '../stores/useWorkOrderStore';
@@ -60,41 +61,65 @@ export const WorkOrdersPage: React.FC = () => {
 
   const getPriorityBadge = (priority: WorkOrderPriority) => {
     if (priority.startsWith('P1')) {
-      return 'bg-status-crit-bg text-status-crit-deep border-status-crit';
+      return 'bg-status-crit-bg text-status-crit border-status-crit/40';
     }
     if (priority.startsWith('P2')) {
-      return 'bg-status-warn-bg text-status-warn-deep border-status-warn';
+      return 'bg-status-warn-bg text-status-warn border-status-warn/40';
     }
     return 'bg-surface-secondary text-ink-secondary border-border';
   };
 
   const getStatusBadge = (status: WorkOrderStatus) => {
     if (status === 'Completed') {
-      return 'bg-status-green-bg text-status-green-deep border-status-green';
+      return 'bg-status-green-bg text-status-green border-status-green/40';
     }
     if (status === 'In Progress') {
-      return 'bg-petroleum-tint text-petroleum-deep border-petroleum';
+      return 'bg-petroleum-tint text-petroleum border-petroleum/40';
     }
     return 'bg-surface-secondary text-ink-muted border-border';
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <SectionHeader
         title="Field Work Orders & Maintenance Dispatch"
-        subtitle="Operational action tracking, mechanical intervention dispatch, and technician task status for Well BW-017."
-        badge={`${workOrders.length} Total Dispatches`}
+        subtitle="Operational action tracking, mechanical intervention dispatch, and field technician task execution for Well BW-017."
+        badge={`${workOrders.length} Dispatches`}
         actions={
           <button
             type="button"
             onClick={() => setCreateWorkOrderModalOpen(true)}
-            className="h-9 px-3.5 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold tracking-wide flex items-center gap-1.5 shadow-sm transition-colors"
+            className="h-8 px-3 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold tracking-wide flex items-center gap-1.5 shadow-sm transition-colors"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             <span>Create Work Order</span>
           </button>
         }
       />
+
+      {/* Visual Operational Workflow Pipeline */}
+      <div className="bg-surface border border-border rounded-xl p-3.5 shadow-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
+        <div className="flex items-center gap-2">
+          <span className="text-ink-muted uppercase font-sans text-[10px] font-bold">Closed-Loop Workflow:</span>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap text-ink">
+          <span className="flex items-center gap-1 text-status-crit font-semibold bg-status-crit-bg px-2 py-0.5 rounded border border-status-crit/30">
+            <AlertTriangle className="w-3 h-3" /> Alert
+          </span>
+          <span className="text-ink-muted">→</span>
+          <span className="flex items-center gap-1 text-petroleum font-semibold bg-petroleum-tint px-2 py-0.5 rounded border border-petroleum/30">
+            <Lightbulb className="w-3 h-3" /> Engineering Insight
+          </span>
+          <span className="text-ink-muted">→</span>
+          <span className="flex items-center gap-1 text-status-warn font-semibold bg-status-warn-bg px-2 py-0.5 rounded border border-status-warn/30">
+            <CheckSquare className="w-3 h-3" /> Recommendation
+          </span>
+          <span className="text-ink-muted">→</span>
+          <span className="flex items-center gap-1 text-status-green font-semibold bg-status-green-bg px-2 py-0.5 rounded border border-status-green/30">
+            <FileSpreadsheet className="w-3 h-3" /> Work Order (Execution)
+          </span>
+        </div>
+      </div>
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2 pb-2 border-b border-border text-xs">
@@ -129,29 +154,29 @@ export const WorkOrdersPage: React.FC = () => {
           onAction={() => setCreateWorkOrderModalOpen(true)}
         />
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {filteredOrders.map((wo) => (
             <div
               key={wo.id}
-              className="bg-surface border border-border rounded-xl p-5 shadow-subtle flex flex-col justify-between"
+              className="bg-surface border border-border rounded-xl p-4 sm:p-5 shadow-subtle flex flex-col justify-between"
             >
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono text-xs font-bold text-petroleum-deep bg-petroleum-tint px-2 py-0.5 rounded border border-petroleum/30">
+                    <span className="font-mono text-xs font-bold text-petroleum bg-petroleum-tint px-2 py-0.5 rounded border border-petroleum/30">
                       {wo.orderNumber}
                     </span>
-                    <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded border ${getPriorityBadge(wo.priority)}`}>
+                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${getPriorityBadge(wo.priority)}`}>
                       {wo.priority}
                     </span>
-                    <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded border ${getStatusBadge(wo.status)}`}>
+                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${getStatusBadge(wo.status)}`}>
                       {wo.status}
                     </span>
                     <span className="text-xs text-ink-muted">·</span>
                     <span className="text-xs text-ink-secondary font-mono">{wo.subsystem}</span>
                   </div>
 
-                  <h2 className="font-heading text-base font-semibold text-ink mt-2">
+                  <h2 className="font-heading text-base font-bold text-ink mt-2">
                     {wo.title}
                   </h2>
 
@@ -166,7 +191,7 @@ export const WorkOrdersPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => updateOrderStatus(wo.id, 'In Progress')}
-                      className="h-8 px-3 rounded-lg border border-petroleum text-petroleum-deep hover:bg-petroleum-tint text-xs font-semibold transition-colors"
+                      className="h-8 px-3 rounded-lg border border-petroleum text-petroleum hover:bg-petroleum-tint text-xs font-semibold transition-colors"
                     >
                       Start Task
                     </button>
@@ -183,7 +208,7 @@ export const WorkOrdersPage: React.FC = () => {
                   {wo.status === 'Completed' && (
                     <span className="text-xs font-semibold text-status-green flex items-center gap-1">
                       <CheckCircle2 className="w-4 h-4" />
-                      <span>Closed</span>
+                      <span>Closed & Logged</span>
                     </span>
                   )}
                 </div>
@@ -301,13 +326,13 @@ export const WorkOrdersPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setCreateWorkOrderModalOpen(false)}
-              className="h-9 px-4 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-semibold"
+              className="h-8 px-4 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-semibold"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="h-9 px-4 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold shadow-sm"
+              className="h-8 px-4 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold shadow-sm"
             >
               Dispatch Work Order
             </button>

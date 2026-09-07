@@ -2,23 +2,124 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Light Theme Baseline (Industrial Engineering Precision) */
+  --canvas: #F4F6F8;
+  --canvas-subtle: #EDF0F3;
+  --surface: #FFFFFF;
+  --surface-secondary: #F8F9FA;
+  --surface-elevated: #FFFFFF;
+  --surface-hover: #F1F4F7;
+  
+  --border: #E2E6EA;
+  --border-subtle: #EDF0F3;
+  --border-hover: #D1D7DC;
+  --border-dark: #B6BDC5;
+
+  --ink: #17212B;
+  --ink-secondary: #66717C;
+  --ink-muted: #8B949E;
+
+  --petroleum: #C69A45;
+  --petroleum-deep: #8A6A22;
+  --petroleum-hover: #B58B3A;
+  --petroleum-active: #9E772E;
+  --petroleum-tint: rgba(198, 154, 69, 0.08);
+  --petroleum-tint-strong: rgba(198, 154, 69, 0.15);
+
+  --status-green: #34D399;
+  --status-green-deep: #2E8A56;
+  --status-green-bg: rgba(52, 211, 153, 0.10);
+
+  --status-warn: #FBBF24;
+  --status-warn-deep: #D49A3A;
+  --status-warn-bg: rgba(251, 191, 36, 0.10);
+
+  --status-crit: #F87171;
+  --status-crit-deep: #D95C5C;
+  --status-crit-bg: rgba(248, 113, 113, 0.10);
+
+  --status-info: #60A5FA;
+  --status-info-deep: #4F8FC4;
+  --status-info-bg: rgba(96, 165, 250, 0.10);
+
+  --shadow-subtle: 0 1px 3px rgba(23, 33, 43, 0.04), 0 1px 2px rgba(23, 33, 43, 0.02);
+  --shadow-card: 0 2px 4px rgba(23, 33, 43, 0.04), 0 1px 2px rgba(23, 33, 43, 0.02);
+  --shadow-flyout: 0 8px 24px rgba(23, 33, 43, 0.08), 0 2px 6px rgba(198, 154, 69, 0.06);
+
+  --chart-grid: #EDF0F3;
+  --chart-axis: #8B949E;
+}
+
+.dark {
+  /* Industrial Engineering Dark Control Room Workstation */
+  --canvas: #0B0F14;
+  --canvas-subtle: #10161D;
+  --surface: #151C24;
+  --surface-secondary: #1A222C;
+  --surface-elevated: #1E2733;
+  --surface-hover: #202A35;
+
+  --border: #293440;
+  --border-subtle: #202934;
+  --border-hover: #364454;
+  --border-dark: #4A5B6D;
+
+  --ink: #F1F5F9;
+  --ink-secondary: #A8B3C2;
+  --ink-muted: #6F7C8C;
+
+  --petroleum: #38BDF8;
+  --petroleum-deep: #22D3EE;
+  --petroleum-hover: #7DD3FC;
+  --petroleum-active: #0284C7;
+  --petroleum-tint: rgba(56, 189, 248, 0.10);
+  --petroleum-tint-strong: rgba(56, 189, 248, 0.20);
+
+  --status-green: #34D399;
+  --status-green-deep: #10B981;
+  --status-green-bg: rgba(52, 211, 153, 0.14);
+
+  --status-warn: #FBBF24;
+  --status-warn-deep: #F59E0B;
+  --status-warn-bg: rgba(251, 191, 36, 0.14);
+
+  --status-crit: #F87171;
+  --status-crit-deep: #EF4444;
+  --status-crit-bg: rgba(248, 113, 113, 0.14);
+
+  --status-info: #60A5FA;
+  --status-info-deep: #3B82F6;
+  --status-info-bg: rgba(96, 165, 250, 0.14);
+
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-flyout: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(56, 189, 248, 0.12);
+
+  --chart-grid: #202934;
+  --chart-axis: #6F7C8C;
+}
+
 @layer base {
   *, *::before, *::after {
     box-sizing: border-box;
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   body {
     margin: 0;
-    background-color: #F4F6F8;
-    color: #17212B;
+    background-color: var(--canvas);
+    color: var(--ink);
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background-color: rgba(198, 154, 69, 0.22);
-    color: #17212B;
+    background-color: var(--petroleum-tint-strong);
+    color: var(--ink);
   }
 
   /* Accessible focus indicators using brand accent */
@@ -27,7 +128,7 @@
   input:focus-visible, 
   select:focus-visible, 
   textarea:focus-visible {
-    outline: 2px solid #C69A45;
+    outline: 2px solid var(--petroleum);
     outline-offset: 2px;
   }
 
@@ -43,12 +144,12 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F4F6F8;
+  background: var(--canvas);
 }
 ::-webkit-scrollbar-thumb {
-  background: #D1D7DC;
+  background: var(--border-hover);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B6BDC5;
+  background: var(--border-dark);
 }

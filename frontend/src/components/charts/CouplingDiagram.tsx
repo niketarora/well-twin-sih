@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowDown, Flame, Waves, Gauge, Activity, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { DataProvenanceBadge } from '../ui/DataProvenanceBadge';
 
 interface CouplingDiagramProps {
   onSelectTwin?: (twinId: 'reservoir' | 'wellbore' | 'srp' | 'surface') => void;
@@ -19,18 +20,21 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
   };
 
   return (
-    <div className={`flex flex-col gap-3 ${className}`}>
+    <div className={`flex flex-col gap-3 select-none ${className}`}>
       {/* Steam / CSS Header */}
       <div className="bg-petroleum-tint border border-petroleum/30 rounded-lg px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-petroleum" />
-          <span className="font-heading text-xs font-semibold uppercase tracking-wider text-petroleum-deep">
+          <span className="font-heading text-xs font-semibold uppercase tracking-wider text-petroleum">
             Energy Input: Cyclic Steam Stimulation (CSS) Cycle 4
           </span>
         </div>
-        <span className="font-mono text-xs font-semibold text-ink">
-          12,400 tonnes steam injected @ 80% quality
-        </span>
+        <div className="flex items-center gap-2">
+          <DataProvenanceBadge type="OBSERVED" size="sm" />
+          <span className="font-mono text-xs font-semibold text-ink">
+            12,400 tonnes steam injected @ 80% quality
+          </span>
+        </div>
       </div>
 
       <div className="flex justify-center my-0.5">
@@ -47,14 +51,17 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
             <span className="w-5 h-5 rounded bg-petroleum text-white font-mono text-xs font-bold flex items-center justify-center">
               1
             </span>
-            <span className="font-heading text-sm font-semibold text-ink group-hover:text-petroleum-deep transition-colors">
+            <span className="font-heading text-sm font-semibold text-ink group-hover:text-petroleum transition-colors">
               Twin 1: Reservoir / Thermal Model
             </span>
-            <span className="px-2 py-0.5 rounded bg-status-warn-bg text-status-warn-deep text-[10px] font-semibold uppercase border border-status-warn">
+            <span className="px-2 py-0.5 rounded bg-status-warn-bg text-status-warn text-[10px] font-semibold uppercase border border-status-warn/40">
               Cooling −0.04 °C/h
             </span>
           </div>
-          <span className="text-[11px] text-ink-muted font-mono">Confidence: 96%</span>
+          <div className="flex items-center gap-2">
+            <DataProvenanceBadge type="MODEL PREDICTION" size="sm" />
+            <span className="text-[11px] text-ink-muted font-mono">Confidence: 96%</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
@@ -85,7 +92,7 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
         <div className="flex items-center gap-2 font-mono text-[10.5px]">
           <span className="px-1.5 py-0.5 bg-surface rounded border border-border">Temp: 214.8°C</span>
           <span className="px-1.5 py-0.5 bg-surface rounded border border-border">Pres: 42.6 bar</span>
-          <span className="px-1.5 py-0.5 bg-status-warn-bg text-status-warn-deep rounded border border-status-warn">Visc: 84 cP (Creep)</span>
+          <span className="px-1.5 py-0.5 bg-status-warn-bg text-status-warn rounded border border-status-warn/30">Visc: 84 cP (Creep)</span>
           <span className="px-1.5 py-0.5 bg-surface rounded border border-border">Mobility: 4.88 mD/cP</span>
         </div>
       </div>
@@ -104,14 +111,17 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
             <span className="w-5 h-5 rounded bg-petroleum text-white font-mono text-xs font-bold flex items-center justify-center">
               2
             </span>
-            <span className="font-heading text-sm font-semibold text-ink group-hover:text-petroleum-deep transition-colors">
+            <span className="font-heading text-sm font-semibold text-ink group-hover:text-petroleum transition-colors">
               Twin 2: Wellbore & Completion Hydraulics
             </span>
-            <span className="px-2 py-0.5 rounded bg-status-green-bg text-status-green-deep text-[10px] font-semibold uppercase border border-status-green">
+            <span className="px-2 py-0.5 rounded bg-status-green-bg text-status-green text-[10px] font-semibold uppercase border border-status-green/40">
               Stable Inflow
             </span>
           </div>
-          <span className="text-[11px] text-ink-muted font-mono">Confidence: 94%</span>
+          <div className="flex items-center gap-2">
+            <DataProvenanceBadge type="MODEL PREDICTION" size="sm" />
+            <span className="text-[11px] text-ink-muted font-mono">Confidence: 94%</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
@@ -142,7 +152,7 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
         <div className="flex items-center gap-2 font-mono text-[10.5px]">
           <span className="px-1.5 py-0.5 bg-surface rounded border border-border">PIP: 38.2 bar</span>
           <span className="px-1.5 py-0.5 bg-surface rounded border border-border">PIT: 184.2°C</span>
-          <span className="px-1.5 py-0.5 bg-status-warn-bg text-status-warn-deep rounded border border-status-warn">Intake Visc: 92 cP</span>
+          <span className="px-1.5 py-0.5 bg-status-warn-bg text-status-warn rounded border border-status-warn/30">Intake Visc: 92 cP</span>
           <span className="px-1.5 py-0.5 bg-surface rounded border border-border">Drawdown: 198 BFPD</span>
         </div>
       </div>
@@ -161,14 +171,17 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
             <span className="w-5 h-5 rounded bg-petroleum text-white font-mono text-xs font-bold flex items-center justify-center">
               3
             </span>
-            <span className="font-heading text-sm font-semibold text-ink group-hover:text-petroleum-deep transition-colors">
+            <span className="font-heading text-sm font-semibold text-ink group-hover:text-petroleum transition-colors">
               Twin 3: Sucker Rod Pump (SRP) & Rod Kinematics
             </span>
-            <span className="px-2 py-0.5 rounded bg-status-crit-bg text-status-crit-deep text-[10px] font-semibold uppercase border border-status-crit">
+            <span className="px-2 py-0.5 rounded bg-status-crit-bg text-status-crit text-[10px] font-semibold uppercase border border-status-crit/40">
               Fluid Pound @ 2.80m
             </span>
           </div>
-          <span className="text-[11px] text-ink-muted font-mono">Confidence: 89%</span>
+          <div className="flex items-center gap-2">
+            <DataProvenanceBadge type="MODEL PREDICTION" size="sm" />
+            <span className="text-[11px] text-ink-muted font-mono">Confidence: 89%</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
@@ -198,7 +211,7 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
         </span>
         <div className="flex items-center gap-2 font-mono text-[10.5px]">
           <span className="px-1.5 py-0.5 bg-surface rounded border border-border">Pump Cap: 205 BOPD</span>
-          <span className="px-1.5 py-0.5 bg-status-crit-bg text-status-crit-deep rounded border border-status-crit">Fillage: 84.6%</span>
+          <span className="px-1.5 py-0.5 bg-status-crit-bg text-status-crit rounded border border-status-crit/30">Fillage: 84.6%</span>
           <span className="px-1.5 py-0.5 bg-surface rounded border border-border">Liquid Delivered: 320 BFPD</span>
         </div>
       </div>
@@ -217,14 +230,17 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
             <span className="w-5 h-5 rounded bg-petroleum text-white font-mono text-xs font-bold flex items-center justify-center">
               4
             </span>
-            <span className="font-heading text-sm font-semibold text-ink group-hover:text-petroleum-deep transition-colors">
+            <span className="font-heading text-sm font-semibold text-ink group-hover:text-petroleum transition-colors">
               Twin 4: Surface Gathering & Reconciled Production
             </span>
-            <span className="px-2 py-0.5 rounded bg-status-warn-bg text-status-warn-deep text-[10px] font-semibold uppercase border border-status-warn">
+            <span className="px-2 py-0.5 rounded bg-status-warn-bg text-status-warn text-[10px] font-semibold uppercase border border-status-warn/40">
               Gap: −13.8 BOPD (−7.0%)
             </span>
           </div>
-          <span className="text-[11px] text-ink-muted font-mono">Confidence: 91%</span>
+          <div className="flex items-center gap-2">
+            <DataProvenanceBadge type="ACTUAL" size="sm" />
+            <span className="text-[11px] text-ink-muted font-mono">Confidence: 91%</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
@@ -248,7 +264,7 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
       </div>
 
       {/* Model Agreement Footer */}
-      <div className="mt-2 bg-surface border border-border rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+      <div className="mt-2 bg-surface border border-border rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shadow-subtle">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-status-green" />
           <span className="font-heading font-semibold text-ink">
@@ -259,7 +275,7 @@ export const CouplingDiagram: React.FC<CouplingDiagramProps> = ({
         <button
           type="button"
           onClick={() => navigate('/model-comparison')}
-          className="text-petroleum-deep hover:text-ink font-semibold text-xs"
+          className="text-petroleum hover:underline font-semibold text-xs"
         >
           Open Model Validation Matrix →
         </button>

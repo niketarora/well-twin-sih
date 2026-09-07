@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, ShieldAlert, AlertTriangle, ArrowRight, Gauge, Layers, Zap } from 'lucide-react';
+import { Activity, ShieldAlert, AlertTriangle, ArrowRight, Gauge, Layers, Zap, ArrowDown, BatteryCharging, AlertCircle } from 'lucide-react';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { DynamometerChart } from '../components/charts/DynamometerChart';
 import { StatusBadge } from '../components/ui/StatusBadge';
+import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { digitalTwinService } from '../services';
 import { SrpTwinState } from '../types';
@@ -30,7 +31,7 @@ export const SrpPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <SectionHeader
         title="Twin 3: Sucker Rod Pump (SRP) & Artificial Lift Diagnostics"
         subtitle="Downhole traveling valve kinematics, real-time dynamometer load loop decomposition, and 3-tier rod string Goodman fatigue stress tracking."
@@ -38,67 +39,150 @@ export const SrpPage: React.FC = () => {
         badgeType="red"
       />
 
-      {/* Causal Chain Banner */}
-      <div className="bg-surface border border-border border-l-4 border-l-status-crit rounded-xl p-4 shadow-subtle flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-status-crit shrink-0" />
-          <div className="leading-snug">
-            <span className="font-heading font-semibold text-ink">Active Causal Physics Coupling:</span>
-            <span className="text-ink-secondary ml-1.5">
-              Reservoir Cooling (−0.04°C/h) → Viscosity Creep (84 cP) → Inflow Lag → Pump Fillage Drop (84.6%) → Downstroke Fluid Pound @ 2.80 m → Section-2 Rod Stress (81.5%).
+      {/* Causal Relationship Banner (Viscosity -> Load -> Fillage -> Efficiency -> Energy) */}
+      <div className="bg-surface border border-border border-l-4 border-l-status-crit rounded-xl p-4 shadow-subtle">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-3 border-b border-border mb-3">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-status-crit shrink-0" />
+            <span className="font-heading text-xs font-semibold uppercase tracking-wider text-ink">
+              Artificial Lift Physical Causal Propagation
             </span>
           </div>
+          <span className="text-[10.5px] font-mono text-status-crit font-bold bg-status-crit-bg px-2 py-0.5 rounded border border-status-crit/30 self-start md:self-auto">
+            Recommended Action: Trim VFD from 8.4 to 7.8 SPM
+          </span>
         </div>
-        <span className="font-mono text-status-crit-deep font-semibold whitespace-nowrap bg-status-crit-bg px-2 py-1 rounded">
-          Recommended: Trim VFD to 8.0 SPM
-        </span>
+
+        {/* 5-Step Causal Cascade */}
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 text-center text-xs font-mono">
+          <div className="p-2 rounded bg-surface-secondary border border-border-subtle flex flex-col items-center">
+            <span className="text-[9.5px] text-ink-muted uppercase">1. Viscosity Rise</span>
+            <span className="font-bold text-status-warn mt-1">+11% (84 cP)</span>
+            <span className="text-[10px] text-ink-muted">Reservoir cooling</span>
+          </div>
+
+          <div className="p-2 rounded bg-surface-secondary border border-border-subtle flex flex-col items-center">
+            <span className="text-[9.5px] text-ink-muted uppercase">2. Higher Load</span>
+            <span className="font-bold text-status-crit mt-1">+6.2% Drag</span>
+            <span className="text-[10px] text-ink-muted">Downstroke drag</span>
+          </div>
+
+          <div className="p-2 rounded bg-surface-secondary border border-border-subtle flex flex-col items-center border-l-2 border-l-status-crit">
+            <span className="text-[9.5px] text-ink-muted uppercase">3. Lower Fillage</span>
+            <span className="font-bold text-status-crit mt-1">84.6% (−3.6%)</span>
+            <span className="text-[10px] text-status-crit">Fluid pound @ 2.80m</span>
+          </div>
+
+          <div className="p-2 rounded bg-surface-secondary border border-border-subtle flex flex-col items-center">
+            <span className="text-[9.5px] text-ink-muted uppercase">4. Lower Efficiency</span>
+            <span className="font-bold text-status-warn mt-1">86.2% (−4.1%)</span>
+            <span className="text-[10px] text-ink-muted">Chamber deficit</span>
+          </div>
+
+          <div className="p-2 rounded bg-surface-secondary border border-border-subtle flex flex-col items-center">
+            <span className="text-[9.5px] text-ink-muted uppercase">5. Higher Energy</span>
+            <span className="font-bold text-status-crit mt-1">+12.4% kWh/m³</span>
+            <span className="text-[10px] text-ink-muted">34.8 kWh/m³</span>
+          </div>
+        </div>
       </div>
 
-      {/* 5 Primary SRP Mechanical KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">Kinematic Speed</span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-ink">{twin.strokeRate}</span>
-            <span className="font-mono text-xs text-ink-muted">SPM</span>
+      {/* 8 Primary SRP Mechanical Diagnostics Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        {/* 1. Pump Fillage */}
+        <div className="bg-surface border border-border rounded-xl p-3 shadow-subtle border-l-[3px] border-l-status-crit">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] uppercase font-semibold text-ink-muted truncate">Fillage</span>
+            <DataProvenanceBadge type="ACTUAL" size="sm" />
           </div>
-          <span className="text-[11px] text-ink-muted mt-1 block">Target 8.50 SPM · VFD 42.8 Hz</span>
+          <div className="font-mono text-xl font-bold text-status-crit mt-1.5">
+            {twin.barrelFillage}%
+          </div>
+          <span className="text-[10px] text-status-crit mt-0.5 block truncate">Target &gt;90%</span>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">Stroke Length</span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-ink">{twin.strokeLength}</span>
-            <span className="font-mono text-xs text-ink-muted">m</span>
+        {/* 2. Pump Efficiency */}
+        <div className="bg-surface border border-border rounded-xl p-3 shadow-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] uppercase font-semibold text-ink-muted truncate">Efficiency</span>
+            <DataProvenanceBadge type="ESTIMATED" size="sm" />
           </div>
-          <span className="text-[11px] text-ink-muted mt-1 block">Effective stroke 3.08 m</span>
+          <div className="font-mono text-xl font-bold text-ink mt-1.5">
+            86.2%
+          </div>
+          <span className="text-[10px] text-ink-muted mt-0.5 block truncate">Volumetric</span>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle border-l-[3px] border-l-status-crit">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">Pump Vol. Fillage</span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-status-crit">{twin.barrelFillage}</span>
-            <span className="font-mono text-xs text-ink-muted">%</span>
+        {/* 3. Rod Load */}
+        <div className="bg-surface border border-border rounded-xl p-3 shadow-subtle border-l-[3px] border-l-status-crit">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] uppercase font-semibold text-ink-muted truncate">PPRL Load</span>
+            <DataProvenanceBadge type="OBSERVED" size="sm" />
           </div>
-          <span className="text-[11px] text-status-crit font-medium mt-1 block">Design Floor: 90.0 %</span>
+          <div className="font-mono text-xl font-bold text-status-crit mt-1.5">
+            {twin.peakPolishedRodLoad} <span className="text-[10px] text-ink-muted">kN</span>
+          </div>
+          <span className="text-[10px] text-ink-muted mt-0.5 block truncate">Yield 90.0 kN</span>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle border-l-[3px] border-l-status-crit">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">Peak Polished Rod Load</span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-status-crit">{twin.peakPolishedRodLoad}</span>
-            <span className="font-mono text-xs text-ink-muted">kN</span>
+        {/* 4. Production Capacity */}
+        <div className="bg-surface border border-border rounded-xl p-3 shadow-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] uppercase font-semibold text-ink-muted truncate">Capacity</span>
+            <DataProvenanceBadge type="MODEL PREDICTION" size="sm" />
           </div>
-          <span className="text-[11px] text-status-crit font-medium mt-1 block">Yield Limit: 90.0 kN</span>
+          <div className="font-mono text-xl font-bold text-petroleum mt-1.5">
+            205 <span className="text-[10px] text-ink-muted">BOPD</span>
+          </div>
+          <span className="text-[10px] text-ink-muted mt-0.5 block truncate">At 100% fill</span>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">Gearbox Torque</span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-ink">{twin.gearboxTorquePct}</span>
-            <span className="font-mono text-xs text-ink-muted">%</span>
+        {/* 5. Energy Consumption */}
+        <div className="bg-surface border border-border rounded-xl p-3 shadow-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] uppercase font-semibold text-ink-muted truncate">Energy</span>
+            <DataProvenanceBadge type="OBSERVED" size="sm" />
           </div>
-          <span className="text-[11px] text-status-green font-medium mt-1 block">265.4 of 456 kN·m Rating</span>
+          <div className="font-mono text-xl font-bold text-status-warn mt-1.5">
+            34.8 <span className="text-[10px] text-ink-muted">kWh/m³</span>
+          </div>
+          <span className="text-[10px] text-status-warn mt-0.5 block truncate">+12% vs base</span>
+        </div>
+
+        {/* 6. Floating Risk */}
+        <div className="bg-surface border border-border rounded-xl p-3 shadow-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] uppercase font-semibold text-ink-muted truncate">Floating</span>
+            <DataProvenanceBadge type="MODEL PREDICTION" size="sm" />
+          </div>
+          <div className="font-mono text-xl font-bold text-status-green mt-1.5">
+            Normal
+          </div>
+          <span className="text-[10px] text-status-green mt-0.5 block truncate">+24.6 kN margin</span>
+        </div>
+
+        {/* 7. Unsetting Risk */}
+        <div className="bg-surface border border-border rounded-xl p-3 shadow-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] uppercase font-semibold text-ink-muted truncate">Unsetting</span>
+            <DataProvenanceBadge type="OBSERVED" size="sm" />
+          </div>
+          <div className="font-mono text-xl font-bold text-status-green mt-1.5">
+            None
+          </div>
+          <span className="text-[10px] text-status-green mt-0.5 block truncate">Anchor holding</span>
+        </div>
+
+        {/* 8. Abnormal Loading */}
+        <div className="bg-surface border border-border rounded-xl p-3 shadow-subtle border-l-[3px] border-l-status-crit">
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] uppercase font-semibold text-ink-muted truncate">Loading</span>
+            <DataProvenanceBadge type="ACTUAL" size="sm" />
+          </div>
+          <div className="font-mono text-sm font-bold text-status-crit mt-2 leading-tight">
+            Fluid Pound
+          </div>
+          <span className="text-[10px] text-status-crit mt-0.5 block truncate">@ 2.80 m stroke</span>
         </div>
       </div>
 
@@ -140,8 +224,8 @@ export const SrpPage: React.FC = () => {
               {mockRodTaperAnalysis.map((rod, idx) => (
                 <tr
                   key={idx}
-                  className={`hover:bg-canvas/80 transition-colors ${
-                    rod.stressRatio > 80 ? 'bg-status-warn-bg/40' : ''
+                  className={`hover:bg-canvas-subtle transition-colors ${
+                    rod.stressRatio > 80 ? 'bg-status-warn-bg/30' : ''
                   }`}
                 >
                   <td className="py-2.5 px-4 font-semibold text-ink">{rod.section}</td>
@@ -156,7 +240,7 @@ export const SrpPage: React.FC = () => {
                   </td>
                   <td className="py-2.5 px-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 bg-surface-subtle rounded overflow-hidden">
+                      <div className="w-16 h-1.5 bg-canvas rounded overflow-hidden">
                         <div
                           className="h-full rounded"
                           style={{

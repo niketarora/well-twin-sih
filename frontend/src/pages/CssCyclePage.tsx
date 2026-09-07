@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Flame, ArrowRight, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { Flame, ArrowRight, CheckCircle2, Clock, AlertCircle, ArrowDown, Activity, Layers, Gauge, TrendingDown } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine, Cell } from 'recharts';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { StatusBadge } from '../components/ui/StatusBadge';
+import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { cssCycleService } from '../services';
 import { CssCycleState } from '../types';
@@ -38,87 +39,31 @@ export const CssCyclePage: React.FC = () => {
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <SectionHeader
         title="Cyclic Steam Stimulation (CSS) Cycle Intelligence"
-        subtitle="Multi-cycle steam injection monitoring, thermal soak falloff tracking, and thermodynamic oil–steam ratio (OSR) economic floor forecasting."
+        subtitle="Multi-cycle steam injection surveillance, thermal soak decay kinetics, and thermodynamic oil–steam ratio (OSR) economic cutoffs."
         badge={`Cycle ${cycle.currentCycle} · Day ${cycle.dayInPhase} of ${cycle.totalPhaseDays}`}
         badgeType="amber"
       />
 
-      {/* 4 Primary CSS KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">
-            Cumulative Steam Injected
-          </span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-ink">
-              {cycle.cumulativeSteamInjected.toLocaleString()}
-            </span>
-            <span className="font-mono text-xs text-ink-muted">tonnes</span>
-          </div>
-          <span className="text-[11px] text-status-green font-medium mt-1 block">
-            Target Compliance: {cycle.targetCompliancePct}%
-          </span>
-        </div>
-
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">
-            Mean Injection Pressure
-          </span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-ink">
-              {cycle.meanInjectionPressure}
-            </span>
-            <span className="font-mono text-xs text-ink-muted">bar</span>
-          </div>
-          <span className="text-[11px] text-ink-muted mt-1 block">
-            Fracture Safety Margin: +{cycle.fractureMarginBar} bar
-          </span>
-        </div>
-
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">
-            Cumulative Oil This Cycle
-          </span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-ink">
-              {cycle.cumulativeOilThisCycle.toLocaleString()}
-            </span>
-            <span className="font-mono text-xs text-ink-muted">bbl</span>
-          </div>
-          <span className="text-[11px] text-ink-muted mt-1 block">
-            50.7% of {cycle.cycleTargetOilBbl.toLocaleString()} bbl target
-          </span>
-        </div>
-
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle border-l-[3px] border-l-status-green">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">
-            Instantaneous OSR
-          </span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-status-green">
-              {cycle.instantaneousOSR}
-            </span>
-            <span className="font-mono text-xs text-ink-muted">m³/t</span>
-          </div>
-          <span className="text-[11px] text-status-green font-medium mt-1 block">
-            +{((cycle.instantaneousOSR - cycle.economicCutoffOSR)).toFixed(2)} above economic floor
-          </span>
-        </div>
-      </div>
-
-      {/* 4-Phase Lifecycle Progression Banner */}
+      {/* 4-Phase Progression (INJECTION -> SOAK -> PRODUCTION -> COOLING) */}
       <section className="bg-surface border border-border rounded-xl p-5 shadow-subtle">
-        <div className="flex items-center justify-between pb-3 border-b border-border mb-4">
-          <h2 className="font-heading text-base font-semibold text-ink">
-            Cycle 4 Operational Lifecycle Phases
-          </h2>
-          <span className="text-xs text-ink-muted">Click any phase to view verified telemetry</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-border mb-4 gap-2">
+          <div>
+            <h2 className="font-heading text-base font-semibold text-ink">
+              CSS Lifecycle Progression: Injection → Soak → Production → Cooling
+            </h2>
+            <p className="text-xs text-ink-muted mt-0.5">
+              Current state: Phase 3 (Production · Day 38 of 90) transitioning into gradual cooling phase
+            </p>
+          </div>
+          <span className="font-mono text-xs px-2.5 py-1 rounded bg-petroleum-tint text-petroleum font-bold border border-petroleum/30 self-start sm:self-auto">
+            Cycle 4 Active
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {cycle.phases.map((phase) => {
             const isSelected = selectedPhaseId === phase.id;
             return (
@@ -139,9 +84,9 @@ export const CssCyclePage: React.FC = () => {
                     <span
                       className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded border ${
                         phase.state.includes('Active')
-                          ? 'bg-status-warn-bg text-status-warn-deep border-status-warn'
+                          ? 'bg-status-warn-bg text-status-warn border-status-warn/40'
                           : phase.state.includes('Complete')
-                          ? 'bg-status-green-bg text-status-green-deep border-status-green'
+                          ? 'bg-status-green-bg text-status-green border-status-green/40'
                           : 'bg-surface-secondary text-ink-muted border-border'
                       }`}
                     >
@@ -170,8 +115,56 @@ export const CssCyclePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Selected Phase Detail & OSR Comparison Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* Thermodynamic Parameter Coupling Strip (Temp -> Viscosity -> Mobility -> Inflow -> Pump -> Production) */}
+      <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle">
+        <div className="flex items-center justify-between pb-2.5 border-b border-border mb-3">
+          <span className="font-heading text-xs font-semibold uppercase tracking-wider text-ink">
+            CSS Cycle Thermodynamic Bridge Pipeline
+          </span>
+          <span className="font-mono text-[11px] text-ink-muted">Physical Variable Transformation</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center text-xs font-mono">
+          <div className="p-2.5 bg-surface-secondary rounded border border-border-subtle flex flex-col items-center">
+            <span className="text-[9.5px] text-ink-muted uppercase">1. Temperature</span>
+            <span className="font-bold text-status-warn mt-1">214.8 °C</span>
+            <span className="text-[10px] text-ink-muted">−0.04 °C/h</span>
+          </div>
+
+          <div className="p-2.5 bg-surface-secondary rounded border border-border-subtle flex flex-col items-center">
+            <span className="text-[9.5px] text-ink-muted uppercase">2. Viscosity</span>
+            <span className="font-bold text-status-warn mt-1">84.0 cP</span>
+            <span className="text-[10px] text-ink-muted">Andrade creep</span>
+          </div>
+
+          <div className="p-2.5 bg-surface-secondary rounded border border-border-subtle flex flex-col items-center">
+            <span className="text-[9.5px] text-ink-muted uppercase">3. Mobility</span>
+            <span className="font-bold text-ink mt-1">4.88 mD/cP</span>
+            <span className="text-[10px] text-ink-muted">k / μ ratio</span>
+          </div>
+
+          <div className="p-2.5 bg-surface-secondary rounded border border-border-subtle flex flex-col items-center">
+            <span className="text-[9.5px] text-ink-muted uppercase">4. Inflow</span>
+            <span className="font-bold text-petroleum mt-1">205 BOPD</span>
+            <span className="text-[10px] text-ink-muted">Radial delivery</span>
+          </div>
+
+          <div className="p-2.5 bg-surface-secondary rounded border border-border-subtle flex flex-col items-center border-l-2 border-l-status-crit">
+            <span className="text-[9.5px] text-ink-muted uppercase">5. Pump Fillage</span>
+            <span className="font-bold text-status-crit mt-1">84.6 %</span>
+            <span className="text-[10px] text-status-crit">Fluid pound onset</span>
+          </div>
+
+          <div className="p-2.5 bg-surface-secondary rounded border border-border-subtle flex flex-col items-center">
+            <span className="text-[9.5px] text-ink-muted uppercase">6. Surface Output</span>
+            <span className="font-bold text-status-warn mt-1">184.2 BOPD</span>
+            <span className="text-[10px] text-status-crit">−7.0% Deficit</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Selected Phase Detail & OSR Progression Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* Left: OSR Multi-Cycle History Bar Chart */}
         <section className="lg:col-span-6 bg-surface border border-border rounded-xl p-5 shadow-subtle flex flex-col justify-between">
           <div>
@@ -181,7 +174,7 @@ export const CssCyclePage: React.FC = () => {
                   Multi-Cycle Oil–Steam Ratio (OSR) Progression
                 </h3>
                 <p className="text-xs text-ink-muted mt-0.5">
-                  Historical thermodynamic efficiency vs. economic cutoff threshold (0.18 m³/t)
+                  Thermodynamic recovery efficiency vs. economic cutoff threshold (0.18 m³/t)
                 </p>
               </div>
               <span className="font-mono text-xs font-semibold text-status-warn">
@@ -192,17 +185,33 @@ export const CssCyclePage: React.FC = () => {
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={osrChartData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#EDF0F3" />
-                  <XAxis dataKey="cycle" tick={{ fontSize: 11, fill: '#17212B', fontWeight: 600 }} />
-                  <YAxis domain={[0, 0.7]} unit=" m³/t" tick={{ fontSize: 10, fill: '#8B949E' }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+                  <XAxis dataKey="cycle" tick={{ fontSize: 11, fill: 'var(--ink)', fontWeight: 600 }} stroke="var(--border)" />
+                  <YAxis domain={[0, 0.7]} unit=" m³/t" tick={{ fontSize: 10, fill: 'var(--ink-muted)' }} stroke="var(--border)" />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#17212B', borderColor: '#17212B', borderRadius: 8, color: '#FFFFFF', fontSize: 11 }}
+                    contentStyle={{
+                      backgroundColor: 'var(--surface)',
+                      borderColor: 'var(--border)',
+                      borderRadius: 8,
+                      color: 'var(--ink)',
+                      fontSize: 11,
+                      boxShadow: 'var(--shadow-card)',
+                    }}
                     formatter={(val: any) => [`${val} m³/t`, 'Instantaneous OSR']}
                   />
-                  <ReferenceLine y={0.18} stroke="#D95C5C" strokeWidth={1.5} strokeDasharray="4 4" label={{ value: 'Economic Floor 0.18', fill: '#D95C5C', fontSize: 10, position: 'insideTopRight' }} />
+                  <ReferenceLine
+                    y={0.18}
+                    stroke="var(--status-crit)"
+                    strokeWidth={1.5}
+                    strokeDasharray="4 4"
+                    label={{ value: 'Economic Floor 0.18', fill: 'var(--status-crit)', fontSize: 10, position: 'insideTopRight' }}
+                  />
                   <Bar dataKey="osr" radius={[4, 4, 0, 0]}>
                     {osrChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.isActive ? '#C69A45' : '#D1D7DC'} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.isActive ? 'var(--petroleum)' : 'var(--border-dark)'}
+                      />
                     ))}
                   </Bar>
                 </BarChart>
@@ -211,7 +220,7 @@ export const CssCyclePage: React.FC = () => {
           </div>
 
           <div className="mt-2 pt-3 border-t border-border-subtle text-xs text-ink-secondary flex items-center justify-between">
-            <span>Cycle 4 is pacing well above the cutoff. Projected economic cutoff occurs in ~52 days around day 90.</span>
+            <span>Cycle 4 is pacing well above the cutoff. Projected economic floor occurs in ~52 days around day 90.</span>
           </div>
         </section>
 
@@ -220,7 +229,7 @@ export const CssCyclePage: React.FC = () => {
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-border mb-3">
               <div>
-                <span className="font-mono text-xs font-semibold text-petroleum-deep uppercase tracking-wider">
+                <span className="font-mono text-xs font-semibold text-petroleum uppercase tracking-wider">
                   Phase {selectedPhase.number} Focus
                 </span>
                 <h3 className="font-heading text-sm font-semibold text-ink mt-0.5">
@@ -250,7 +259,7 @@ export const CssCyclePage: React.FC = () => {
 
           <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-ink-muted">
             <span>Field Dispatched: Thermal SG-04</span>
-            <span className="text-petroleum-deep font-semibold">100.8% Target Met</span>
+            <span className="text-petroleum font-semibold">100.8% Target Met</span>
           </div>
         </section>
       </div>
@@ -283,8 +292,8 @@ export const CssCyclePage: React.FC = () => {
               {cycle.history.map((h, i) => (
                 <tr
                   key={i}
-                  className={`hover:bg-canvas/80 transition-colors ${
-                    h.status === 'Active' ? 'bg-petroleum-tint/50 font-semibold' : ''
+                  className={`hover:bg-canvas-subtle transition-colors ${
+                    h.status === 'Active' ? 'bg-petroleum-tint font-semibold' : ''
                   }`}
                 >
                   <td className="py-3 px-4 font-sans font-semibold text-ink flex items-center gap-2">
@@ -297,7 +306,7 @@ export const CssCyclePage: React.FC = () => {
                   <td className="py-3 px-4 text-right text-ink">
                     {h.cumulativeOilBbl.toLocaleString()} bbl
                   </td>
-                  <td className="py-3 px-4 text-right font-bold text-petroleum-deep">
+                  <td className="py-3 px-4 text-right font-bold text-petroleum">
                     {h.osr.toFixed(2)}
                   </td>
                   <td className="py-3 px-4 text-right text-ink">

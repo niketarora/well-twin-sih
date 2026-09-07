@@ -1,12 +1,23 @@
 import React from 'react';
 import { KpiCardData } from '../../types';
+import { DataProvenanceBadge, ProvenanceType } from './DataProvenanceBadge';
 
 interface KpiCardProps {
   kpi: KpiCardData;
   className?: string;
+  provenance?: ProvenanceType;
 }
 
-export const KpiCard: React.FC<KpiCardProps> = ({ kpi, className = '' }) => {
+export const KpiCard: React.FC<KpiCardProps> = ({ kpi, className = '', provenance }) => {
+  // Infer provenance based on engineering metric if not explicitly passed
+  const getProvenance = (): ProvenanceType => {
+    if (provenance) return provenance;
+    if (kpi.id === 'bht' || kpi.id === 'flp' || kpi.id === 'rate') return 'OBSERVED';
+    if (kpi.id === 'visc') return 'ESTIMATED';
+    if (kpi.id === 'fillage') return 'ACTUAL';
+    return 'OBSERVED';
+  };
+
   return (
     <div
       className={`bg-surface rounded-xl p-4 transition-all duration-150 border ${
@@ -15,17 +26,20 @@ export const KpiCard: React.FC<KpiCardProps> = ({ kpi, className = '' }) => {
           : 'border-border hover:border-border-hover hover:shadow-card'
       } ${className}`}
     >
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold tracking-wider uppercase text-ink-secondary">
+      <div className="flex items-center justify-between gap-1">
+        <span className="text-[10px] font-semibold tracking-wider uppercase text-ink-secondary truncate">
           {kpi.label}
         </span>
-        {kpi.attention && (
-          <span className="w-1.5 h-1.5 rounded-full bg-status-crit animate-pulse"></span>
-        )}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <DataProvenanceBadge type={getProvenance()} size="sm" />
+          {kpi.attention && (
+            <span className="w-1.5 h-1.5 rounded-full bg-status-crit animate-pulse"></span>
+          )}
+        </div>
       </div>
 
-      <div className="flex items-baseline gap-1 mt-3">
-        <span className="font-mono text-[28px] font-medium tracking-tight text-ink leading-none">
+      <div className="flex items-baseline gap-1 mt-2.5">
+        <span className="font-mono text-[26px] font-medium tracking-tight text-ink leading-none">
           {kpi.value}
         </span>
         <span className="font-mono text-xs text-ink-muted tracking-normal">
@@ -34,7 +48,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({ kpi, className = '' }) => {
       </div>
 
       {kpi.delta && (
-        <div className="flex items-center gap-1.5 mt-2.5 font-mono text-xs">
+        <div className="flex items-center gap-1.5 mt-2 font-mono text-xs">
           <span
             className={
               kpi.attention
@@ -47,7 +61,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({ kpi, className = '' }) => {
             {kpi.arrow} {kpi.delta}
           </span>
           {kpi.deltaNote && (
-            <span className="font-sans text-[11px] text-ink-muted">
+            <span className="font-sans text-[11px] text-ink-muted truncate">
               {kpi.deltaNote}
             </span>
           )}

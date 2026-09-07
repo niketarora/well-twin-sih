@@ -16,9 +16,10 @@ import {
   FileSpreadsheet,
   ChevronDown,
   ChevronRight,
-  ShieldAlert,
   Sliders,
   Scale,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { useAlertStore } from '../../stores/useAlertStore';
@@ -29,6 +30,7 @@ interface NavItem {
   path: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: number | string;
+  accent?: boolean;
 }
 
 interface NavSection {
@@ -37,7 +39,7 @@ interface NavSection {
 }
 
 export const Sidebar: React.FC = () => {
-  const { sidebarCollapsed, setSidebarCollapsed } = useUIStore();
+  const { sidebarCollapsed, setSidebarCollapsed, toggleSidebar } = useUIStore();
   const { alerts } = useAlertStore();
   const location = useLocation();
 
@@ -47,7 +49,6 @@ export const Sidebar: React.FC = () => {
     MONITORING: true,
     'DIGITAL TWIN': true,
     INTELLIGENCE: true,
-    FIELD: true,
     OPERATIONS: true,
   });
 
@@ -61,7 +62,6 @@ export const Sidebar: React.FC = () => {
       items: [
         { id: 'overview', label: 'Overview', path: '/overview', icon: LayoutDashboard },
         { id: 'well-state', label: 'Well State', path: '/well-state', icon: Sliders },
-        { id: 'srp-pump', label: 'SRP / Pump Diagnostics', path: '/srp-pump', icon: Activity },
         { id: 'trends', label: 'Trends & Analytics', path: '/trends', icon: LineChart },
         { id: 'css-cycle', label: 'CSS Cycle Tracker', path: '/css-cycle', icon: Flame },
         { id: 'alerts', label: 'Operational Alerts', path: '/alerts', icon: AlertTriangle, badge: activeAlertCount },
@@ -70,30 +70,26 @@ export const Sidebar: React.FC = () => {
     {
       label: 'DIGITAL TWIN',
       items: [
-        { id: 'digital-twin', label: 'Twin Overview', path: '/digital-twin', icon: Cpu },
+        { id: 'digital-twin', label: 'Twin Overview', path: '/digital-twin', icon: Cpu, accent: true },
         { id: 'reservoir', label: 'Reservoir / Thermal', path: '/reservoir', icon: Flame },
-        { id: 'wellbore', label: 'Wellbore Hydraulics', path: '/wellbore', icon: Layers },
-        { id: 'surface-production', label: 'Surface Production', path: '/surface-production', icon: Activity },
+        { id: 'wellbore', label: 'Wellbore Hydrodynamics', path: '/wellbore', icon: Layers },
+        { id: 'srp-pump', label: 'SRP Lift Dynamics', path: '/srp-pump', icon: Activity },
+        { id: 'surface-production', label: 'Surface Production', path: '/surface-production', icon: Sliders },
+        { id: 'well-diagram', label: 'Wellbore Schematic', path: '/well-diagram', icon: GitCommit },
         { id: 'model-comparison', label: 'Model Validation', path: '/model-comparison', icon: Scale },
       ],
     },
     {
       label: 'INTELLIGENCE',
       items: [
-        { id: 'ai-insights', label: 'AI Insights & Physics', path: '/ai-insights', icon: Lightbulb },
-        { id: 'anomalies', label: 'Subsurface Anomalies', path: '/anomalies', icon: Radar },
-      ],
-    },
-    {
-      label: 'FIELD',
-      items: [
-        { id: 'equipment', label: 'Equipment Health', path: '/equipment', icon: Wrench },
-        { id: 'well-diagram', label: 'Wellbore Diagram', path: '/well-diagram', icon: GitCommit },
+        { id: 'ai-insights', label: 'AI Insights', path: '/ai-insights', icon: Lightbulb },
+        { id: 'anomalies', label: 'Anomalies & Attribution', path: '/anomalies', icon: Radar },
       ],
     },
     {
       label: 'OPERATIONS',
       items: [
+        { id: 'equipment', label: 'Equipment Health', path: '/equipment', icon: Wrench },
         { id: 'recommendations', label: 'Recommendations', path: '/recommendations', icon: CheckSquare },
         { id: 'work-orders', label: 'Work Orders', path: '/work-orders', icon: FileSpreadsheet },
       ],
@@ -112,24 +108,39 @@ export const Sidebar: React.FC = () => {
 
       <aside
         className={`fixed lg:sticky top-0 z-40 h-screen bg-surface border-r border-border flex flex-col transition-all duration-200 shrink-0 select-none ${
-          sidebarCollapsed ? '-translate-x-full lg:translate-x-0 lg:w-[60px]' : 'w-[245px] translate-x-0'
+          sidebarCollapsed ? '-translate-x-full lg:translate-x-0 lg:w-[60px]' : 'w-[250px] translate-x-0'
         }`}
       >
         {/* Brand Header */}
-        <div className="h-[58px] px-4 border-b border-border flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded border border-petroleum bg-surface flex items-center justify-center font-heading font-bold text-xs text-petroleum-deep shrink-0 shadow-sm">
-            W
-          </div>
-          {!sidebarCollapsed && (
-            <div className="flex flex-col leading-tight overflow-hidden">
-              <span className="font-heading font-bold text-xs tracking-wider text-ink">
-                WELL TWIN
-              </span>
-              <span className="text-[10px] tracking-wider uppercase text-ink-muted">
-                Decision Support
-              </span>
+        <div className="h-[58px] px-3.5 border-b border-border flex items-center justify-between">
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            <div className="w-7 h-7 rounded border border-petroleum bg-surface flex items-center justify-center font-heading font-bold text-xs text-petroleum shrink-0 shadow-sm">
+              W
             </div>
-          )}
+            {!sidebarCollapsed && (
+              <div className="flex flex-col leading-tight overflow-hidden">
+                <span className="font-heading font-bold text-xs tracking-wider text-ink">
+                  WELL TWIN
+                </span>
+                <span className="text-[9.5px] tracking-wider uppercase text-ink-muted truncate">
+                  Engineering Workstation
+                </span>
+              </div>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className="hidden lg:flex p-1 rounded hover:bg-surface-secondary text-ink-muted hover:text-ink transition-colors"
+            title={sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          >
+            {sidebarCollapsed ? (
+              <PanelLeftOpen className="w-4 h-4" />
+            ) : (
+              <PanelLeftClose className="w-4 h-4" />
+            )}
+          </button>
         </div>
 
         {/* Scrollable Navigation List */}
@@ -142,7 +153,7 @@ export const Sidebar: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => toggleSection(section.label)}
-                    className="w-full flex items-center justify-between px-4 py-1.5 text-[10px] font-semibold tracking-wider text-ink-muted hover:text-ink uppercase transition-colors"
+                    className="w-full flex items-center justify-between px-3.5 py-1.5 text-[9.5px] font-semibold tracking-wider text-ink-muted hover:text-ink uppercase transition-colors"
                   >
                     <span>{section.label}</span>
                     {isOpen ? (
@@ -175,13 +186,13 @@ export const Sidebar: React.FC = () => {
                           }`}
                         >
                           <div className="flex items-center gap-2.5 min-w-0">
-                            {/* Active indicator amber bar */}
+                            {/* Active indicator amber/cyan bar */}
                             {isActive && (
                               <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-petroleum rounded-r" />
                             )}
                             <Icon
                               className={`w-4 h-4 shrink-0 ${
-                                isActive ? 'text-petroleum-deep' : 'text-ink-muted'
+                                isActive ? 'text-petroleum' : 'text-ink-muted'
                               }`}
                             />
                             {!sidebarCollapsed && (

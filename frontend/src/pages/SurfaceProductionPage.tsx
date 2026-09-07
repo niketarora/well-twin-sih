@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, TrendingDown, Scale, CheckCircle2, AlertTriangle, ArrowDown } from 'lucide-react';
+import { Activity, TrendingDown, Scale, CheckCircle2, AlertTriangle, ArrowDown, Droplets, Zap, Gauge } from 'lucide-react';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -13,6 +13,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { SectionHeader } from '../components/ui/SectionHeader';
+import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { digitalTwinService } from '../services';
 import { SurfaceProductionTwinState } from '../types';
@@ -39,66 +40,92 @@ export const SurfaceProductionPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <SectionHeader
-        title="Twin 4: Surface Production Reconciled & Predicted vs. Actual"
+        title="Twin 4: Surface Gathering & Reconciled Production"
         subtitle="Digital twin model production validation comparing physics-based reservoir inflow projections against test separator coriolis delivery."
         badge="Deviation: −7.0% Deficit"
         badgeType="amber"
       />
 
-      {/* Production Scorecard Bento */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">
-            Digital Twin Model Expected
-          </span>
+      {/* Production Scorecard Bento (Oil rate, Water rate, Predicted, Gap, CSOR, Energy, Decline) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {/* 1. Actual Oil Rate */}
+        <div className="bg-surface border border-border rounded-xl p-3.5 shadow-subtle border-l-[3px] border-l-status-warn">
+          <div className="flex items-center justify-between">
+            <span className="text-[9.5px] uppercase font-semibold text-ink-muted">Actual Net Oil</span>
+            <DataProvenanceBadge type="ACTUAL" size="sm" />
+          </div>
           <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-ink">{twin.netOilRatePredicted}</span>
+            <span className="font-mono text-2xl font-bold text-status-warn">{twin.netOilRateActual}</span>
             <span className="font-mono text-xs text-ink-muted">BOPD</span>
           </div>
-          <span className="text-[11px] text-ink-muted mt-1 block">
-            P10–P90 Band: 191.5 – 204.5 BOPD
-          </span>
+          <span className="text-[10.5px] text-ink-muted mt-0.5 block">Separator Skid 03</span>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle border-l-[3px] border-l-petroleum">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">
-            Actual Reconciled Net Oil
-          </span>
+        {/* 2. Predicted Oil Rate */}
+        <div className="bg-surface border border-border rounded-xl p-3.5 shadow-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-[9.5px] uppercase font-semibold text-ink-muted">Model Predicted</span>
+            <DataProvenanceBadge type="MODEL PREDICTION" size="sm" />
+          </div>
           <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-petroleum-deep">{twin.netOilRateActual}</span>
+            <span className="font-mono text-2xl font-bold text-petroleum">{twin.netOilRatePredicted}</span>
             <span className="font-mono text-xs text-ink-muted">BOPD</span>
           </div>
-          <span className="text-[11px] text-ink-muted mt-1 block">
-            Separator Skid 03 (9.1° API)
-          </span>
+          <span className="text-[10.5px] text-ink-muted mt-0.5 block">PINN Simulation</span>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle border-l-[3px] border-l-status-crit">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">
-            Production Deficit Gap
-          </span>
+        {/* 3. Production Gap */}
+        <div className="bg-surface border border-border rounded-xl p-3.5 shadow-subtle border-l-[3px] border-l-status-crit">
+          <div className="flex items-center justify-between">
+            <span className="text-[9.5px] uppercase font-semibold text-ink-muted">Production Gap</span>
+            <DataProvenanceBadge type="ACTUAL" size="sm" />
+          </div>
           <div className="flex items-baseline gap-1 mt-2">
             <span className="font-mono text-2xl font-bold text-status-crit">−{twin.productionGap}</span>
             <span className="font-mono text-xs text-ink-muted">BOPD</span>
           </div>
-          <span className="text-[11px] text-status-crit font-medium mt-1 block">
-            Deviation: {twin.deviationPct} % Off-Model
-          </span>
+          <span className="text-[10.5px] text-status-crit font-medium mt-0.5 block">Δ −7.0% Deficit</span>
         </div>
 
-        <div className="bg-surface border border-border rounded-xl p-4 shadow-subtle">
-          <span className="text-[10px] uppercase font-semibold text-ink-muted block">
-            Instantaneous OSR
-          </span>
-          <div className="flex items-baseline gap-1 mt-2">
-            <span className="font-mono text-2xl font-bold text-status-green">{twin.instantaneousOSR}</span>
-            <span className="font-mono text-xs text-ink-muted">m³/t</span>
+        {/* 4. Water Rate & Cut */}
+        <div className="bg-surface border border-border rounded-xl p-3.5 shadow-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-[9.5px] uppercase font-semibold text-ink-muted">Water Rate</span>
+            <DataProvenanceBadge type="OBSERVED" size="sm" />
           </div>
-          <span className="text-[11px] text-status-green font-medium mt-1 block">
-            Economic Floor 0.18 m³/t (~52d)
-          </span>
+          <div className="flex items-baseline gap-1 mt-2">
+            <span className="font-mono text-2xl font-bold text-ink">529.8</span>
+            <span className="font-mono text-xs text-ink-muted">BWPD</span>
+          </div>
+          <span className="text-[10.5px] text-ink-muted mt-0.5 block">Water Cut: 74.2%</span>
+        </div>
+
+        {/* 5. Steam-Oil Ratio (SOR) */}
+        <div className="bg-surface border border-border rounded-xl p-3.5 shadow-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-[9.5px] uppercase font-semibold text-ink-muted">Cum. CSOR</span>
+            <DataProvenanceBadge type="ESTIMATED" size="sm" />
+          </div>
+          <div className="flex items-baseline gap-1 mt-2">
+            <span className="font-mono text-2xl font-bold text-status-green">3.18</span>
+            <span className="font-mono text-xs text-ink-muted">t/t</span>
+          </div>
+          <span className="text-[10.5px] text-status-green font-medium mt-0.5 block">Target &lt; 3.50</span>
+        </div>
+
+        {/* 6. Lift Energy & Decline */}
+        <div className="bg-surface border border-border rounded-xl p-3.5 shadow-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-[9.5px] uppercase font-semibold text-ink-muted">Lift Energy</span>
+            <DataProvenanceBadge type="OBSERVED" size="sm" />
+          </div>
+          <div className="flex items-baseline gap-1 mt-2">
+            <span className="font-mono text-2xl font-bold text-ink">34.8</span>
+            <span className="font-mono text-xs text-ink-muted">kWh/m³</span>
+          </div>
+          <span className="text-[10.5px] text-status-warn mt-0.5 block">Decline: −0.48 BOPD/d</span>
         </div>
       </div>
 
@@ -114,11 +141,11 @@ export const SurfaceProductionPage: React.FC = () => {
                 Observed test separator delivery vs. coupled digital twin forecast with P10/P90 uncertainty band
               </p>
             </div>
-            <div className="flex items-center gap-3 font-mono text-xs">
-              <span className="text-petroleum-deep font-semibold flex items-center gap-1">
+            <div className="flex items-center gap-3 font-mono text-xs self-start sm:self-auto">
+              <span className="text-status-warn font-semibold flex items-center gap-1">
                 ● Actual Rate (BOPD)
               </span>
-              <span className="text-ink font-semibold flex items-center gap-1">
+              <span className="text-petroleum font-semibold flex items-center gap-1">
                 -- Model Predicted
               </span>
               <span className="text-ink-muted flex items-center gap-1">
@@ -130,24 +157,36 @@ export const SurfaceProductionPage: React.FC = () => {
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={mockPredictedVsActualHistory} margin={{ top: 15, right: 30, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#EDF0F3" />
-                <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#8B949E' }} />
-                <YAxis domain={[170, 220]} unit=" BOPD" tick={{ fontSize: 10, fill: '#8B949E' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
+                <XAxis dataKey="day" tick={{ fontSize: 10, fill: 'var(--ink-muted)' }} stroke="var(--border)" />
+                <YAxis domain={[170, 220]} unit=" BOPD" tick={{ fontSize: 10, fill: 'var(--ink-muted)' }} stroke="var(--border)" />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#17212B', borderColor: '#17212B', borderRadius: 8, color: '#FFFFFF', fontSize: 11 }}
+                  contentStyle={{
+                    backgroundColor: 'var(--surface)',
+                    borderColor: 'var(--border)',
+                    borderRadius: 8,
+                    color: 'var(--ink)',
+                    fontSize: 11,
+                    boxShadow: 'var(--shadow-card)',
+                  }}
                   formatter={(val: any, name: any) => [
                     `${val} BOPD`,
                     name === 'actual' ? 'Actual Observed' : name === 'predicted' ? 'Model Predicted' : name,
                   ]}
                 />
-                <ReferenceLine x="Day 38 (Today)" stroke="#D95C5C" strokeDasharray="4 4" label={{ value: 'Current: -13.8 BOPD Gap', fill: '#D95C5C', fontSize: 10 }} />
+                <ReferenceLine
+                  x="Day 38 (Today)"
+                  stroke="var(--status-crit)"
+                  strokeDasharray="4 4"
+                  label={{ value: 'Current: -13.8 BOPD Gap', fill: 'var(--status-crit)', fontSize: 10 }}
+                />
                 {/* Confidence Envelope */}
-                <Area type="monotone" dataKey="p10" stroke="none" fill="rgba(198, 154, 69, 0.08)" name="Upper P10" />
-                <Area type="monotone" dataKey="p90" stroke="none" fill="rgba(255, 255, 255, 0.9)" name="Lower P90" />
+                <Area type="monotone" dataKey="p10" stroke="none" fill="var(--petroleum-tint)" name="Upper P10" />
+                <Area type="monotone" dataKey="p90" stroke="none" fill="var(--surface)" name="Lower P90" />
                 {/* Model Line */}
-                <Line type="monotone" dataKey="predicted" stroke="#17212B" strokeWidth={2} strokeDasharray="5 4" dot={false} name="predicted" />
+                <Line type="monotone" dataKey="predicted" stroke="var(--petroleum)" strokeWidth={2} strokeDasharray="5 4" dot={false} name="predicted" />
                 {/* Actual Measured Line */}
-                <Line type="monotone" dataKey="actual" stroke="#C69A45" strokeWidth={3} dot={{ r: 4, fill: '#C69A45', stroke: '#FFFFFF', strokeWidth: 2 }} name="actual" />
+                <Line type="monotone" dataKey="actual" stroke="var(--status-warn)" strokeWidth={3} dot={{ r: 4, fill: 'var(--status-warn)', stroke: 'var(--surface)', strokeWidth: 2 }} name="actual" />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -178,9 +217,9 @@ export const SurfaceProductionPage: React.FC = () => {
                 item.type === 'base'
                   ? 'bg-surface-secondary border-border font-semibold text-ink'
                   : item.type === 'subtotal'
-                  ? 'bg-petroleum-tint border-petroleum/30 font-semibold text-petroleum-deep'
+                  ? 'bg-petroleum-tint border-petroleum/30 font-semibold text-petroleum'
                   : item.type === 'final'
-                  ? 'bg-status-green-bg border-status-green font-bold text-status-green-deep text-sm'
+                  ? 'bg-status-green-bg border-status-green font-bold text-status-green text-sm'
                   : 'bg-surface border-border-subtle text-status-crit'
               }`}
             >

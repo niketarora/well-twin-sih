@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Scale, CheckCircle2, AlertTriangle, ArrowRight, ShieldCheck, RefreshCw } from 'lucide-react';
+import { Scale, CheckCircle2, AlertTriangle, ArrowRight, ShieldCheck, RefreshCw, Layers, Activity } from 'lucide-react';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
+import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
+import { CauseChain } from '../components/ui/CauseChain';
 import { digitalTwinService } from '../services';
 import { ModelValidationItem } from '../types';
 
@@ -10,6 +12,8 @@ export const ModelComparisonPage: React.FC = () => {
   const [items, setItems] = useState<ModelValidationItem[]>([]);
   const [agreement, setAgreement] = useState(93);
   const [loading, setLoading] = useState(true);
+  const [isRecalibrating, setIsRecalibrating] = useState(false);
+  const [recalibrateMessage, setRecalibrateMessage] = useState<string | null>(null);
 
   useEffect(() => {
     digitalTwinService.getModelValidation().then((data) => {
@@ -18,6 +22,16 @@ export const ModelComparisonPage: React.FC = () => {
       setLoading(false);
     });
   }, []);
+
+  const handleRecalibrate = () => {
+    setIsRecalibrating(true);
+    setRecalibrateMessage(null);
+    setTimeout(() => {
+      setIsRecalibrating(false);
+      setRecalibrateMessage('Hydro-thermal inversion complete: SRP fillage prior updated with +2.1% confidence.');
+      setTimeout(() => setRecalibrateMessage(null), 6000);
+    }, 1800);
+  };
 
   if (loading) {
     return (
@@ -38,33 +52,47 @@ export const ModelComparisonPage: React.FC = () => {
       />
 
       {/* Model Drift Notification Banner */}
-      <div className="bg-surface border border-border border-l-4 border-l-status-warn rounded-xl p-4 shadow-subtle flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
-        <div className="flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-status-warn shrink-0" />
-          <div>
-            <div className="flex items-center gap-2">
+      <div className="bg-surface border border-status-warn/40 border-l-4 border-l-status-warn rounded-xl p-5 shadow-subtle flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-status-warn shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-heading font-bold text-ink text-sm">
                 LOCALIZED MODEL DRIFT DETECTED: SUCKER ROD PUMP & SURFACE EFFLUENT
               </span>
-              <span className="px-2 py-0.5 rounded bg-status-warn-bg text-status-warn-deep font-semibold text-[10px] uppercase border border-status-warn">
-                Attention
+              <span className="px-2 py-0.5 rounded bg-status-warn/15 text-status-warn font-semibold text-[10px] uppercase border border-status-warn/30">
+                Attention Required
               </span>
+              <DataProvenanceBadge type="MODEL PREDICTION" />
             </div>
-            <p className="text-ink-secondary mt-0.5 leading-relaxed">
+            <p className="text-ink-secondary leading-relaxed">
               Reservoir and Wellbore models exhibit high agreement (96% and 94%). However, pump fillage has drifted −7.5% off predicted expectation, propagating a −7.0% net oil deficit at the surface test separator.
             </p>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => alert('Triggering hydro-thermal parameter recalibration...')}
-          className="h-8 px-3 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold tracking-wide flex items-center gap-1.5 shrink-0 transition-colors shadow-sm"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>Recalibrate Model</span>
-        </button>
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={handleRecalibrate}
+            disabled={isRecalibrating}
+            className="h-9 px-4 rounded-lg bg-petroleum hover:bg-petroleum-hover disabled:opacity-50 text-white text-xs font-semibold tracking-wide flex items-center gap-2 transition-colors shadow-sm"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isRecalibrating ? 'animate-spin' : ''}`} />
+            <span>{isRecalibrating ? 'Recalibrating Physics Models...' : 'Recalibrate Model'}</span>
+          </button>
+        </div>
       </div>
+
+      {recalibrateMessage && (
+        <div className="bg-status-green/10 border border-status-green/30 text-status-green text-xs font-mono px-4 py-2.5 rounded-lg flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span>{recalibrateMessage}</span>
+        </div>
+      )}
+
+      {/* Physical Drift Causal Propagation */}
+      <CauseChain />
 
       {/* 4 Model Health Scorecard Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -78,22 +106,25 @@ export const ModelComparisonPage: React.FC = () => {
             }`}
           >
             <div>
-              <span className="text-[10px] uppercase font-semibold text-ink-muted block">
-                {item.twinName}
-              </span>
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-[10.5px] uppercase font-bold text-ink-muted tracking-wide">
+                  {item.twinName}
+                </span>
+                <DataProvenanceBadge type="ESTIMATED" />
+              </div>
               <div className="flex items-baseline justify-between mt-2">
                 <span className="font-mono text-2xl font-bold text-ink">
                   {item.confidence} <span className="text-xs font-normal text-ink-muted">%</span>
                 </span>
                 <StatusBadge status={item.status} />
               </div>
-              <span className="text-xs text-ink-secondary font-medium mt-1 block">
+              <span className="text-xs text-ink-secondary font-medium mt-1.5 block">
                 {item.keyMetric}
               </span>
             </div>
 
             <div className="mt-4 pt-2.5 border-t border-border-subtle flex items-center justify-between text-xs font-mono">
-              <span className="text-ink-muted font-sans">Deviation:</span>
+              <span className="text-ink-muted font-sans text-[11px]">Deviation:</span>
               <span
                 className={`font-semibold ${
                   item.deviationPct < -5 ? 'text-status-crit' : 'text-status-green'
@@ -108,23 +139,38 @@ export const ModelComparisonPage: React.FC = () => {
 
       {/* Detailed Model Comparison Table */}
       <section className="bg-surface border border-border rounded-xl p-5 shadow-subtle">
-        <div className="pb-3 border-b border-border mb-4">
-          <h3 className="font-heading text-base font-semibold text-ink">
-            Quantitative Subsystem Model Validation Matrix
-          </h3>
-          <p className="text-xs text-ink-muted mt-0.5">
-            Detailed breakdown of physics predicted values versus actual SCADA observations
-          </p>
+        <div className="pb-3 border-b border-border mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="font-heading text-base font-semibold text-ink">
+              Quantitative Subsystem Model Validation Matrix
+            </h3>
+            <p className="text-xs text-ink-muted mt-0.5">
+              Detailed breakdown of physics predicted values versus actual SCADA observations
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-ink-muted font-mono">P-Value Confidence Threshold: 95%</span>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="bg-surface-secondary text-ink-secondary font-semibold text-[10.5px] uppercase tracking-wider border-b border-border">
+              <tr className="bg-canvas-subtle text-ink-secondary font-semibold text-[10.5px] uppercase tracking-wider border-b border-border">
                 <th className="py-2.5 px-4">Subsystem Twin</th>
                 <th className="py-2.5 px-4">Primary Physical Metric</th>
-                <th className="py-2.5 px-4 text-right">Digital Twin Predicted</th>
-                <th className="py-2.5 px-4 text-right">SCADA Measured</th>
+                <th className="py-2.5 px-4 text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>Twin Predicted</span>
+                    <DataProvenanceBadge type="MODEL PREDICTION" />
+                  </div>
+                </th>
+                <th className="py-2.5 px-4 text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>SCADA Measured</span>
+                    <DataProvenanceBadge type="OBSERVED" />
+                  </div>
+                </th>
                 <th className="py-2.5 px-4 text-right">Residual Deviation</th>
                 <th className="py-2.5 px-4 text-right">Model Confidence</th>
                 <th className="py-2.5 px-4">Validation State</th>
@@ -134,8 +180,8 @@ export const ModelComparisonPage: React.FC = () => {
               {items.map((m) => (
                 <tr
                   key={m.twinId}
-                  className={`hover:bg-canvas/80 transition-colors ${
-                    m.status === 'Attention' ? 'bg-status-warn-bg/25' : ''
+                  className={`hover:bg-canvas-subtle/70 transition-colors ${
+                    m.status === 'Attention' ? 'bg-status-warn/5' : ''
                   }`}
                 >
                   <td className="py-3 px-4 font-sans font-semibold text-ink">
@@ -147,7 +193,7 @@ export const ModelComparisonPage: React.FC = () => {
                   <td className="py-3 px-4 text-right text-ink">
                     {m.predictedValue}
                   </td>
-                  <td className="py-3 px-4 text-right font-bold text-petroleum-deep">
+                  <td className="py-3 px-4 text-right font-bold text-petroleum">
                     {m.actualValue}
                   </td>
                   <td
@@ -172,3 +218,5 @@ export const ModelComparisonPage: React.FC = () => {
     </div>
   );
 };
+
+
