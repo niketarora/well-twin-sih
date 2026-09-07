@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowRight, AlertTriangle, Download, Cpu, TrendingUp, CheckCircle, BarChart3, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowRight, AlertTriangle, Download, Cpu, TrendingUp, CheckCircle, BarChart3, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { HealthScore } from '../components/ui/HealthScore';
 import { KpiCard } from '../components/ui/KpiCard';
@@ -13,11 +13,13 @@ import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { wellService, telemetryService, alertService, generateOperationalLogPdf } from '../services';
 import { Well, WellHealth, KpiCardData, Alert } from '../types';
 import { useUIStore } from '../stores/useUIStore';
+import { useAiCopilot } from '../features/ai-copilot';
 
 export const OverviewPage: React.FC = () => {
   const navigate = useNavigate();
   const params = useParams<{ wellId?: string }>();
   const { selectedWellId, setSelectedWellId } = useUIStore();
+  const { openWithPrompt } = useAiCopilot();
 
   const effectiveWellId = params.wellId || selectedWellId || 'well-bw-017';
 
@@ -382,6 +384,21 @@ export const OverviewPage: React.FC = () => {
             </div>
 
             <div className="mt-5 pt-3 border-t border-border-subtle flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  openWithPrompt(
+                    `Investigate alert ${topAlert.id} (${topAlert.title}): ${topAlert.what}. What is the root cause across the 4 twins and what immediate mitigation is recommended?`
+                  )
+                }
+                className="w-full h-8 rounded-lg bg-petroleum/10 hover:bg-petroleum/20 text-petroleum dark:text-cyan-300 border border-petroleum/30 text-xs font-semibold flex items-center justify-between px-3 transition-colors shadow-subtle"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-petroleum dark:text-cyan-400" />
+                  <span>Investigate with AI Copilot</span>
+                </span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
               <button
                 type="button"
                 onClick={() => navigate('/alerts')}

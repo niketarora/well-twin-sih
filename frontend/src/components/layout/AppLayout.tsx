@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
+import { AiCopilotDrawer, AiCopilotTrigger } from '../../features/ai-copilot';
 
 export const AppLayout: React.FC = () => {
   return (
@@ -13,6 +14,10 @@ export const AppLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* AI Engineering Copilot Trigger & Drawer */}
+      <AiCopilotTrigger />
+      <AiCopilotDrawer />
     </div>
   );
 };

@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
-import { Menu, Sun, Moon, Wifi, Activity } from 'lucide-react';
+import { Menu, Sun, Moon, Wifi, Activity, Bot } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { mockWell, mockFieldWells } from '../../mock';
+import { useAiCopilot } from '../../features/ai-copilot';
 
 export const Header: React.FC = () => {
   const { toggleSidebar, theme, toggleTheme, selectedWellId } = useUIStore();
+  const { toggleOpen: toggleAi } = useAiCopilot();
 
   const activeWell = useMemo(() => {
     const found = mockFieldWells.find(w => w.id === selectedWellId || w.code.toLowerCase() === selectedWellId.toLowerCase());
@@ -111,6 +113,18 @@ export const Header: React.FC = () => {
 
       {/* Right-hand side controls & Theme toggle */}
       <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+        {/* AI Copilot Launch Button */}
+        <button
+          type="button"
+          onClick={toggleAi}
+          className="h-8 px-2.5 rounded-lg border border-petroleum/30 bg-petroleum/10 hover:bg-petroleum/20 text-petroleum dark:text-cyan-400 flex items-center gap-1.5 transition-colors focus:outline-none focus:ring-1 focus:ring-petroleum font-semibold text-xs shadow-2xs"
+          title="Open Well Twin AI Copilot"
+          aria-label="Open Well Twin AI Copilot"
+        >
+          <Bot className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline text-[11px]">AI Copilot</span>
+        </button>
+
         {/* Theme Toggle Button (Light ☀ / Dark ☾) */}
         <button
           type="button"
