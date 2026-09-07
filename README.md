@@ -6,6 +6,37 @@ Developed for Smart India Hackathon (SIH) / Industrial Oil & Gas applications, f
 
 ---
 
+## Repository Structure
+
+```
+well-twin-sih/
+├── docs/                     # PRD, TRD, Master Spec & Design references
+│   ├── UI designs/
+│   ├── IMPLEMENTATION_PLAN.md
+│   ├── PRD.md
+│   ├── TRD.md
+│   └── WELL_TWIN_MASTER_SPEC.md
+├── frontend/                 # Complete React + Vite + TypeScript Workstation
+│   ├── public/               # Static assets & favicon
+│   ├── src/
+│   │   ├── app/              # Router & providers
+│   │   ├── components/       # UI library & interactive visualizers
+│   │   ├── mock/             # Deterministic physical mock datasets for 4 twins
+│   │   ├── pages/            # 17 operational workstation pages
+│   │   ├── services/         # Typed domain service layer
+│   │   ├── stores/           # Zustand reactive stores
+│   │   └── types/            # Domain TypeScript interfaces
+│   ├── index.html
+│   ├── package.json
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── .gitignore
+└── README.md
+```
+
+---
+
 ## Key Features
 
 - **4-Tier Coupled Digital Twin Models**:
@@ -65,61 +96,31 @@ Developed for Smart India Hackathon (SIH) / Industrial Oil & Gas applications, f
 - Node.js (v18 or higher recommended)
 - npm / pnpm / yarn
 
-### Installation
+### Installation & Running Locally
 
 ```bash
-# Clone the repository
-git clone https://github.com/niketarora/well-twin-sih.git
-cd well-twin-sih
+# Navigate to the frontend directory
+cd frontend
 
 # Install dependencies
 npm install
-```
 
-### Running Locally
-
-```bash
 # Start Vite development server
 npm run dev
 ```
 
 The application will be available at `http://localhost:3000/` (or the port specified in terminal output).
 
-### Building for Production
+### Production Build
 
 ```bash
+cd frontend
+
 # Type check and build production bundle
 npm run build
 
 # Preview production build locally
 npm run preview
-```
-
----
-
-## Project Structure
-
-```
-├── docs/                     # PRD, TRD, Master Specification & Design references
-├── public/                   # Static assets & favicon
-├── src/
-│   ├── app/                  # Application router and global providers
-│   ├── components/
-│   │   ├── charts/           # Interactive Dynamometer, Steam Plume, Coupling Diagram
-│   │   ├── layout/           # AppLayout, Header, Sidebar
-│   │   └── ui/               # HealthScore, KpiCard, StatusBadge, Modal, Sparkline, etc.
-│   ├── mock/                 # Deterministic physical mock datasets for all 4 twins
-│   ├── pages/                # All 17 operational workstation pages
-│   ├── services/             # Typed domain service layer
-│   ├── stores/               # Zustand reactive stores (UI, Alerts, Work Orders, Recommendations)
-│   ├── types/                # Domain TypeScript interfaces and types
-│   ├── App.tsx
-│   ├── index.css
-│   └── main.tsx
-├── package.json
-├── tailwind.config.js
-├── tsconfig.json
-└── vite.config.ts
 ```
 
 ---
