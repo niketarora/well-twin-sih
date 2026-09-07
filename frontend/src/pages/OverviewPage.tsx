@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowRight, AlertTriangle, Download, Cpu, TrendingUp, CheckCircle, BarChart3 } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowRight, AlertTriangle, Download, Cpu, TrendingUp, CheckCircle, BarChart3, CheckCircle2, XCircle } from 'lucide-react';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { HealthScore } from '../components/ui/HealthScore';
 import { KpiCard } from '../components/ui/KpiCard';
@@ -10,30 +10,49 @@ import { ErrorState } from '../components/ui/ErrorState';
 import { CauseChain } from '../components/ui/CauseChain';
 import { ModelHealthDrift } from '../components/ui/ModelHealthDrift';
 import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
-import { wellService, telemetryService, alertService } from '../services';
-import { WellHealth, KpiCardData, Alert } from '../types';
+import { wellService, telemetryService, alertService, generateOperationalLogPdf } from '../services';
+import { Well, WellHealth, KpiCardData, Alert } from '../types';
+import { useUIStore } from '../stores/useUIStore';
 
 export const OverviewPage: React.FC = () => {
   const navigate = useNavigate();
+  const params = useParams<{ wellId?: string }>();
+  const { selectedWellId, setSelectedWellId } = useUIStore();
+
+  const effectiveWellId = params.wellId || selectedWellId || 'well-bw-017';
+
+  const [well, setWell] = useState<Well | null>(null);
   const [health, setHealth] = useState<WellHealth | null>(null);
   const [kpis, setKpis] = useState<KpiCardData[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [topAlert, setTopAlert] = useState<Alert | null>(null);
   const [chartData, setChartData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // PDF Export states
+  const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [exportNotification, setExportNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
   const loadData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const [healthData, kpisData, alertsData, chart] = await Promise.all([
-        wellService.getWellHealth('well-bw-017'),
+      if (params.wellId && params.wellId !== selectedWellId) {
+        setSelectedWellId(params.wellId);
+      }
+
+      const [wellData, healthData, kpisData, alertsData, chart] = await Promise.all([
+        wellService.getWell(effectiveWellId),
+        wellService.getWellHealth(effectiveWellId),
         telemetryService.getOverviewKpis(),
         alertService.getAlerts(),
         telemetryService.getOverview14DayChart(),
       ]);
+      setWell(wellData);
       setHealth(healthData);
       setKpis(kpisData);
+      setAlerts(alertsData);
       setTopAlert(alertsData.find((a) => a.id === 'ALM-4412') || alertsData[0]);
       setChartData(chart);
       setLoading(false);
@@ -45,7 +64,81 @@ export const OverviewPage: React.FC = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [effectiveWellId]);
+
+  const handleExportOperationalLog = async () => {
+    if (!well) return;
+    setIsExporting(true);
+    setExportNotification(null);
+
+    try {
+      await generateOperationalLogPdf({
+        well: {
+          id: well.id,
+          code: well.code,
+          name: well.name,
+          fieldName: well.fieldName,
+          basin: well.basin,
+          formation: well.formation,
+          location: well.location,
+          cycle: well.cycle,
+          dayInCycle: well.dayInCycle,
+          totalCycleDays: well.totalCycleDays,
+          phase: well.phase,
+          scadaStatus: well.scadaStatus,
+          status: health?.status || 'Active Surveillance',
+          isSyntheticDemo: well.isSyntheticDemo,
+          engineerOnDuty: well.engineerOnDuty,
+        },
+        health: health ? {
+          score: health.score,
+          status: health.status,
+          dominantConcern: health.dominantConcern,
+          subsystems: health.subsystems.map(s => ({
+            id: s.id,
+            name: s.name,
+            score: s.score,
+            dominantFactor: s.dominantFactor,
+          })),
+        } : undefined,
+        kpis: kpis.map(k => ({
+          id: k.id,
+          label: k.label,
+          value: k.value,
+          unit: k.unit,
+          status: k.status,
+          sublabel: k.deltaNote || k.delta || '',
+        })),
+        alerts: alerts.slice(0, 5).map(a => ({
+          id: a.id,
+          severity: a.severity === 'critical' ? 'Critical' : a.severity === 'warning' ? 'Warning' : 'Info',
+          subsystem: a.subsystem || 'Artificial Lift',
+          title: a.title,
+          timestamp: a.timestamp,
+          status: a.status === 'acknowledged' ? 'Acknowledged' : 'Active',
+        })),
+      });
+
+      setExportNotification({
+        type: 'success',
+        message: `Operational Log PDF for ${well.code} generated and downloaded successfully.`,
+      });
+      setTimeout(() => {
+        setExportNotification(null);
+      }, 5000);
+    } catch (err: any) {
+      console.error('PDF generation error:', err);
+      setExportNotification({
+        type: 'error',
+        message: 'Unable to generate operational log. Please try again.',
+      });
+      setTimeout(() => {
+        setExportNotification(null);
+      }, 6000);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -69,28 +162,57 @@ export const OverviewPage: React.FC = () => {
       {/* Page Title & Workstation Quick Actions */}
       <SectionHeader
         title="Well Twin Command Center"
-        subtitle="Real-time multi-physics surveillance, physical cause chain attribution, and predicted vs actual production reconcile for BW-017."
+        subtitle={`Real-time multi-physics surveillance, physical cause chain attribution, and predicted vs actual production reconcile for ${well?.code || 'BW-017'}.`}
         actions={
           <>
             <button
               type="button"
-              onClick={() => alert('Exporting 24h operational engineering sheet (.csv)...')}
-              className="h-8 px-3 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-medium flex items-center gap-1.5 transition-colors shadow-subtle"
+              disabled={isExporting}
+              onClick={handleExportOperationalLog}
+              className="h-8 px-3 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-medium flex items-center gap-1.5 transition-colors shadow-subtle disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Download print-ready A4 operational engineering report"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>Export Operational Log</span>
+              <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce text-petroleum dark:text-cyan-400' : ''}`} />
+              <span>{isExporting ? 'Generating Operational Log...' : 'Export Operational Log'}</span>
             </button>
             <button
               type="button"
               onClick={() => navigate('/alerts')}
               className="h-8 px-3 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold tracking-wide flex items-center gap-1.5 shadow-sm transition-colors"
             >
-              <span>Review 3 Active Alerts</span>
+              <span>Review {alerts.length || 3} Active Alerts</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </>
         }
       />
+
+      {/* Export Feedback Toast / Banner */}
+      {exportNotification && (
+        <div
+          className={`px-4 py-2.5 rounded-lg border flex items-center justify-between text-xs font-medium transition-all ${
+            exportNotification.type === 'success'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300'
+              : 'bg-red-500/10 border-red-500/30 text-red-800 dark:text-red-300'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {exportNotification.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            ) : (
+              <XCircle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />
+            )}
+            <span>{exportNotification.message}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setExportNotification(null)}
+            className="text-xs opacity-70 hover:opacity-100 ml-3"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Engineering Cause-and-Effect Propagation Chain */}
       <CauseChain />
@@ -236,7 +358,7 @@ export const OverviewPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-semibold tracking-wider uppercase text-status-crit flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5 text-status-crit" />
-                  Engineering Priority Triage · 1 of 3 Active
+                  Engineering Priority Triage · 1 of {alerts.length || 3} Active
                 </span>
                 <span className="font-mono text-[11px] text-ink-muted">
                   {topAlert.timestamp}

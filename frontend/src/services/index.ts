@@ -7,3 +7,5 @@ export * from './aiInsightService';
 export * from './equipmentService';
 export * from './recommendationService';
 export * from './workOrderService';
+export * from './fieldService';
+export * from './export/operationalLogPdf';

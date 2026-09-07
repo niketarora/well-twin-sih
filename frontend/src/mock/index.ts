@@ -9,3 +9,4 @@ export * from './aiInsights';
 export * from './equipment';
 export * from './recommendations';
 export * from './workOrders';
+export * from './field';

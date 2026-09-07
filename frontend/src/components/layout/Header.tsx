@@ -1,10 +1,36 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Menu, Sun, Moon, Wifi, Activity } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
-import { mockWell } from '../../mock';
+import { mockWell, mockFieldWells } from '../../mock';
 
 export const Header: React.FC = () => {
-  const { toggleSidebar, theme, toggleTheme } = useUIStore();
+  const { toggleSidebar, theme, toggleTheme, selectedWellId } = useUIStore();
+
+  const activeWell = useMemo(() => {
+    const found = mockFieldWells.find(w => w.id === selectedWellId || w.code.toLowerCase() === selectedWellId.toLowerCase());
+    if (found) {
+      return {
+        ...mockWell,
+        id: found.id,
+        code: found.code,
+        name: found.name,
+        cycle: found.cycle,
+        dayInCycle: found.dayInCycle,
+        oilRateBopd: found.oilRateBopd,
+        bht: found.bottomHoleTempC,
+        bhp: (found.bottomHolePressMpa * 10).toFixed(1), // MPa to bar
+        phase: found.phase,
+        status: found.status,
+      };
+    }
+    return {
+      ...mockWell,
+      oilRateBopd: 84.2,
+      bht: 214.8,
+      bhp: '38.7',
+      status: 'Attention Required',
+    };
+  }, [selectedWellId]);
 
   return (
     <header className="bg-surface border-b border-border px-3 sm:px-6 sticky top-0 z-20 flex items-center justify-between min-h-[58px] shadow-subtle select-none">
@@ -22,20 +48,20 @@ export const Header: React.FC = () => {
         {/* Field & Location */}
         <div className="hidden sm:flex flex-col justify-center pr-4 border-r border-border shrink-0">
           <span className="font-heading text-xs md:text-sm font-semibold text-ink leading-tight">
-            {mockWell.fieldName}
+            {activeWell.fieldName}
           </span>
           <span className="text-[11px] text-ink-muted leading-tight mt-0.5">
-            {mockWell.basin} · {mockWell.formation}
+            {activeWell.basin} · {activeWell.formation}
           </span>
         </div>
 
         {/* Well ID Badge */}
         <div className="flex flex-col justify-center px-1 sm:px-3 sm:border-r border-border shrink-0">
           <span className="text-[9.5px] uppercase font-semibold tracking-wider text-ink-muted leading-none">
-            Well
+            Active Well
           </span>
           <span className="font-mono text-sm md:text-base font-bold text-ink mt-0.5">
-            {mockWell.code}
+            {activeWell.code}
           </span>
         </div>
 
@@ -46,7 +72,7 @@ export const Header: React.FC = () => {
               Operating State
             </span>
             <span className="text-xs font-medium text-ink mt-0.5">
-              Production · <span className="font-mono text-petroleum font-semibold">CSS {mockWell.cycle}</span> · Day {mockWell.dayInCycle}/90
+              {activeWell.phase} · <span className="font-mono text-petroleum font-semibold">CSS {activeWell.cycle}</span> · Day {activeWell.dayInCycle}/90
             </span>
           </div>
 
@@ -56,15 +82,15 @@ export const Header: React.FC = () => {
           <div className="flex items-center gap-3 font-mono text-xs">
             <div title="Bottomhole Flowing Pressure (Estimated/Observed)">
               <span className="text-[9.5px] text-ink-muted font-sans uppercase block leading-none">BHP</span>
-              <span className="font-bold text-ink leading-tight">38.7 <span className="text-[10px] text-ink-muted font-normal">bar</span></span>
+              <span className="font-bold text-ink leading-tight">{activeWell.bhp} <span className="text-[10px] text-ink-muted font-normal">bar</span></span>
             </div>
             <div title="Bottomhole Temperature (Observed Downhole Sensor)">
               <span className="text-[9.5px] text-ink-muted font-sans uppercase block leading-none">BHT</span>
-              <span className="font-bold text-status-warn leading-tight">214.8 <span className="text-[10px] text-ink-muted font-normal">°C</span></span>
+              <span className="font-bold text-status-warn leading-tight">{activeWell.bht} <span className="text-[10px] text-ink-muted font-normal">°C</span></span>
             </div>
             <div title="Current Net Oil Production Rate (Actual Coriolis)">
               <span className="text-[9.5px] text-ink-muted font-sans uppercase block leading-none">Oil Rate</span>
-              <span className="font-bold text-ink leading-tight">184.2 <span className="text-[10px] text-ink-muted font-normal">BOPD</span></span>
+              <span className="font-bold text-ink leading-tight">{activeWell.oilRateBopd} <span className="text-[10px] text-ink-muted font-normal">BOPD</span></span>
             </div>
           </div>
         </div>
@@ -100,14 +126,18 @@ export const Header: React.FC = () => {
           )}
         </button>
 
-        {/* Engineer Initials Avatar */}
-        <div className="flex items-center gap-2 pl-2 sm:pl-3 border-l border-border">
-          <div className="w-7 h-7 rounded bg-surface-secondary border border-border flex items-center justify-center font-mono text-xs font-semibold text-ink-secondary">
+        {/* User initials / Engineer on duty */}
+        <div className="flex items-center gap-2.5 pl-1 sm:pl-3 sm:border-l border-border">
+          <div className="w-8 h-8 rounded-full bg-petroleum/10 border border-petroleum/25 flex items-center justify-center text-xs font-bold text-petroleum font-mono">
             {mockWell.engineerOnDuty.initials}
           </div>
-          <div className="hidden 2xl:flex flex-col leading-tight text-left">
-            <span className="text-xs font-medium text-ink">{mockWell.engineerOnDuty.name}</span>
-            <span className="text-[10px] text-ink-muted">{mockWell.engineerOnDuty.role}</span>
+          <div className="hidden md:flex flex-col leading-none">
+            <span className="text-xs font-semibold text-ink">
+              {mockWell.engineerOnDuty.name}
+            </span>
+            <span className="text-[10.5px] text-ink-muted mt-0.5">
+              {mockWell.engineerOnDuty.role}
+            </span>
           </div>
         </div>
       </div>

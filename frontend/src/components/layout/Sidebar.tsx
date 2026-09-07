@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
+  Map,
   LayoutDashboard,
   Cpu,
   Layers,
@@ -60,6 +61,7 @@ export const Sidebar: React.FC = () => {
     {
       label: 'MONITORING',
       items: [
+        { id: 'field-map', label: 'Field Map', path: '/', icon: Map },
         { id: 'overview', label: 'Overview', path: '/overview', icon: LayoutDashboard },
         { id: 'well-state', label: 'Well State', path: '/well-state', icon: Sliders },
         { id: 'trends', label: 'Trends & Analytics', path: '/trends', icon: LineChart },

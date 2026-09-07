@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
+import { HomePage } from '../pages/HomePage';
 import { OverviewPage } from '../pages/OverviewPage';
 import { DigitalTwinOverviewPage } from '../pages/DigitalTwinOverviewPage';
 import { WellStatePage } from '../pages/WellStatePage';
@@ -26,11 +27,83 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/overview" replace />,
+        element: <HomePage />,
       },
       {
         path: 'overview',
         element: <OverviewPage />,
+      },
+      {
+        path: 'well/:wellId',
+        element: <OverviewPage />,
+      },
+      {
+        path: 'well/:wellId/overview',
+        element: <OverviewPage />,
+      },
+      {
+        path: 'well/:wellId/digital-twin',
+        element: <DigitalTwinOverviewPage />,
+      },
+      {
+        path: 'well/:wellId/well-state',
+        element: <WellStatePage />,
+      },
+      {
+        path: 'well/:wellId/reservoir',
+        element: <ReservoirPage />,
+      },
+      {
+        path: 'well/:wellId/wellbore',
+        element: <WellborePage />,
+      },
+      {
+        path: 'well/:wellId/srp-pump',
+        element: <SrpPage />,
+      },
+      {
+        path: 'well/:wellId/surface-production',
+        element: <SurfaceProductionPage />,
+      },
+      {
+        path: 'well/:wellId/trends',
+        element: <TrendsPage />,
+      },
+      {
+        path: 'well/:wellId/css-cycle',
+        element: <CssCyclePage />,
+      },
+      {
+        path: 'well/:wellId/alerts',
+        element: <AlertsPage />,
+      },
+      {
+        path: 'well/:wellId/anomalies',
+        element: <AnomaliesPage />,
+      },
+      {
+        path: 'well/:wellId/ai-insights',
+        element: <AiInsightsPage />,
+      },
+      {
+        path: 'well/:wellId/equipment',
+        element: <EquipmentPage />,
+      },
+      {
+        path: 'well/:wellId/well-diagram',
+        element: <WellDiagramPage />,
+      },
+      {
+        path: 'well/:wellId/model-comparison',
+        element: <ModelComparisonPage />,
+      },
+      {
+        path: 'well/:wellId/recommendations',
+        element: <RecommendationsPage />,
+      },
+      {
+        path: 'well/:wellId/work-orders',
+        element: <WorkOrdersPage />,
       },
       {
         path: 'digital-twin',
@@ -98,7 +171,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '*',
-        element: <Navigate to="/overview" replace />,
+        element: <Navigate to="/" replace />,
       },
     ],
   },
