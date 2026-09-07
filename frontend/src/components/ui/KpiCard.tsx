@@ -1,6 +1,8 @@
 import React from 'react';
+import { Sparkles } from 'lucide-react';
 import { KpiCardData } from '../../types';
 import { DataProvenanceBadge, ProvenanceType } from './DataProvenanceBadge';
+import { useAiCopilot } from '../../features/ai-copilot';
 
 interface KpiCardProps {
   kpi: KpiCardData;
@@ -9,6 +11,8 @@ interface KpiCardProps {
 }
 
 export const KpiCard: React.FC<KpiCardProps> = ({ kpi, className = '', provenance }) => {
+  const { openWithPrompt } = useAiCopilot();
+
   // Infer provenance based on engineering metric if not explicitly passed
   const getProvenance = (): ProvenanceType => {
     if (provenance) return provenance;
@@ -18,9 +22,18 @@ export const KpiCard: React.FC<KpiCardProps> = ({ kpi, className = '', provenanc
     return 'OBSERVED';
   };
 
+  const handleExplain = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    openWithPrompt(
+      `Explain metric ${kpi.label} (${kpi.value} ${kpi.unit}): status is ${kpi.status || 'Normal'}${
+        kpi.delta ? `, trend is ${kpi.delta}` : ''
+      }. What are the physics implications across the reservoir, wellbore, pump, and surface?`
+    );
+  };
+
   return (
     <div
-      className={`bg-surface rounded-xl p-4 transition-all duration-150 border ${
+      className={`group relative bg-surface rounded-xl p-4 transition-all duration-150 border ${
         kpi.attention
           ? 'border-status-crit/40 border-l-[3px] border-l-status-crit shadow-sm'
           : 'border-border hover:border-border-hover hover:shadow-card'
@@ -30,8 +43,17 @@ export const KpiCard: React.FC<KpiCardProps> = ({ kpi, className = '', provenanc
         <span className="text-[10px] font-semibold tracking-wider uppercase text-ink-secondary truncate">
           {kpi.label}
         </span>
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           <DataProvenanceBadge type={getProvenance()} size="sm" />
+          <button
+            type="button"
+            onClick={handleExplain}
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded text-ink-muted hover:text-petroleum dark:hover:text-cyan-400 hover:bg-surface-secondary"
+            title={`Explain ${kpi.label} with AI Copilot`}
+            aria-label={`Explain ${kpi.label} with AI Copilot`}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+          </button>
           {kpi.attention && (
             <span className="w-1.5 h-1.5 rounded-full bg-status-crit animate-pulse"></span>
           )}

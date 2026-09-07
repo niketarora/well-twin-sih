@@ -2,6 +2,28 @@ import { Alert } from '../types';
 
 export const mockAlerts: Alert[] = [
   {
+    id: 'ALM-4415',
+    severity: 'critical',
+    status: 'active',
+    subsystem: 'Artificial Lift (SRP)',
+    source: 'Goodman Cyclic Fatigue Observer',
+    title: 'Section-2 rod taper stress exceeds 80% endurance limit',
+    what: 'Norris 97 special alloy rod section 2 (120–280 m interval) has reached 212 MPa peak cyclic tensile stress (81.5% of yield limit). Combined with continuous downstroke fluid pound at 2.80 m, cumulative fatigue damage rate is accelerating 3.8x above design baseline.',
+    why: 'High peak cyclic loads combined with compressive shock waves from fluid pound induce rapid micro-crack propagation in the taper section, posing an immediate parting risk within <48 operating hours.',
+    action: 'Immediately decrease stroke frequency to 7.8 SPM via VFD controller. Perform acoustic fluid level survey to confirm pump intake submergence and verify counterbalance effect.',
+    metric: 'Goodman Stress Ratio',
+    observedValue: '81.5 %',
+    threshold: '< 75.0 % Safe',
+    timestamp: 'Since 12:30 UTC · 2 h 15 m',
+    evidence: [
+      { label: 'Section 2 Peak Stress', value: '212 MPa' },
+      { label: 'Yield Limit', value: '260 MPa' },
+      { label: 'Goodman Stress Ratio', value: '81.5 %' },
+      { label: 'Peak Polished Rod Load', value: '88.4 kN' },
+      { label: 'Fatigue Acceleration', value: '3.8x baseline' },
+    ],
+  },
+  {
     id: 'ALM-4412',
     severity: 'critical',
     status: 'active',

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { mockDynoLoops } from '../../mock/digitalTwin/srp';
 import { DataProvenanceBadge } from '../ui/DataProvenanceBadge';
+import { Activity, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface DynamometerChartProps {
   className?: string;
@@ -13,10 +14,10 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
 
   const currentLoop = mockDynoLoops[selectedLoopKey];
 
-  // Map displacement (0 to 4m) to SVG X (60 to 670)
-  const dx = (x: number) => (60 + (x / 4) * 610).toFixed(1);
-  // Map string load (0 to 120 kN) to SVG Y (338 down to 30)
-  const dy = (y: number) => (338 - (y / 120) * 308).toFixed(1);
+  // Wide-format viewBox: 1200 x 410 (matches 1:1 standard workstation scale factor)
+  // Plot Area: X from 70 to 1140 (width = 1070px), Y from 350 down to 40 (height = 310px)
+  const dx = (x: number) => (70 + (x / 4) * 1070).toFixed(1);
+  const dy = (y: number) => (350 - (y / 120) * 310).toFixed(1);
 
   const loopToPoints = (pts: number[][]) => pts.map(([x, y]) => `${dx(x)},${dy(y)}`).join(' ');
 
@@ -24,14 +25,56 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
   const downholePoly = loopToPoints(currentLoop.downhole);
 
   const yTicks = [0, 20, 40, 60, 80, 100, 120];
-  const xTicks = [0, 1.0, 2.0, 3.0, 4.0];
+  const xTicks = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0];
+
+  const diagnosticData = {
+    current: {
+      displacement: '3.65 m',
+      fillage: '84.6%',
+      fillageStatus: 'Deficit · Sluggish',
+      fillageColor: 'text-status-crit',
+      inception: '2.80 m (Downstroke)',
+      inceptionDesc: 'Fluid pound impact detected',
+      inceptionColor: 'text-status-crit',
+      minMargin: '+24.6 kN',
+      minMarginDesc: 'Above rod float threshold',
+      peakLoad: '88.4 kN',
+      cardClassification: 'Severe Fluid Pound / Incomplete Fill',
+    },
+    previous: {
+      displacement: '3.65 m',
+      fillage: '87.2%',
+      fillageStatus: 'Moderate Deficit',
+      fillageColor: 'text-status-warn',
+      inception: '2.80 m (Downstroke)',
+      inceptionDesc: 'Incipient fluid pound collapse',
+      inceptionColor: 'text-status-warn',
+      minMargin: '+25.4 kN',
+      minMarginDesc: 'Adequate rod tension margin',
+      peakLoad: '88.2 kN',
+      cardClassification: 'Incipient Fluid Pound · Transition',
+    },
+    baseline: {
+      displacement: '3.65 m',
+      fillage: '98.2%',
+      fillageStatus: 'Optimal Full Barrel',
+      fillageColor: 'text-status-green',
+      inception: 'None Detected',
+      inceptionDesc: 'Continuous hydrostatic damping',
+      inceptionColor: 'text-status-green',
+      minMargin: '+26.6 kN',
+      minMarginDesc: 'Normal buoyant string tension',
+      peakLoad: '89.2 kN',
+      cardClassification: 'Normal Full Pump Chamber',
+    },
+  }[selectedLoopKey];
 
   return (
-    <div className={`bg-surface border border-border rounded-xl p-5 shadow-subtle flex flex-col gap-4 ${className}`}>
+    <div className={`bg-surface border border-border rounded-xl p-5 shadow-subtle flex flex-col gap-3.5 ${className}`}>
       {/* Card Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-heading text-base font-semibold text-ink">
               Full-Cycle Dynamometer Load Card
             </h3>
@@ -39,32 +82,49 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
               {currentLoop.label}
             </span>
             <DataProvenanceBadge type="OBSERVED" size="sm" />
+            <span
+              className={`text-[11px] font-semibold px-2 py-0.5 rounded ${
+                selectedLoopKey === 'current'
+                  ? 'bg-red-500/10 text-status-crit border border-status-crit/30'
+                  : selectedLoopKey === 'previous'
+                  ? 'bg-amber-500/10 text-status-warn border border-status-warn/30'
+                  : 'bg-emerald-500/10 text-status-green border border-status-green/30'
+              }`}
+            >
+              {diagnosticData.cardClassification}
+            </span>
           </div>
-          <p className="text-xs text-ink-secondary mt-0.5">
-            Continuous surface rod displacement (m) vs string load (kN) with mathematical downhole pump card projection
+          <p className="text-xs text-ink-secondary mt-0.5 leading-relaxed">
+            Real-time polished rod displacement (m) vs string load (kN) coupled with mathematical downhole pump card projection and traveling valve timing.
           </p>
         </div>
 
-        {/* View toggles & Tab switcher */}
+        {/* View toggles & Cycle switcher */}
         <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
           <div className="inline-flex rounded-lg border border-border bg-surface-secondary p-0.5 text-xs font-mono">
             <button
               type="button"
               onClick={() => setShowSurface(!showSurface)}
-              className={`px-2 py-1 rounded transition-colors ${
-                showSurface ? 'bg-petroleum text-white font-bold' : 'text-ink-muted hover:text-ink'
+              className={`px-2.5 py-1 rounded transition-colors text-xs font-medium flex items-center gap-1.5 ${
+                showSurface
+                  ? 'bg-petroleum text-white shadow-sm'
+                  : 'text-ink-muted hover:text-ink'
               }`}
             >
-              Surface
+              <span className={`w-2 h-2 rounded-full ${showSurface ? 'bg-white' : 'bg-petroleum'}`} />
+              <span>Surface Loop</span>
             </button>
             <button
               type="button"
               onClick={() => setShowDownhole(!showDownhole)}
-              className={`px-2 py-1 rounded transition-colors ${
-                showDownhole ? 'bg-status-info text-white font-bold' : 'text-ink-muted hover:text-ink'
+              className={`px-2.5 py-1 rounded transition-colors text-xs font-medium flex items-center gap-1.5 ${
+                showDownhole
+                  ? 'bg-status-info text-white shadow-sm'
+                  : 'text-ink-muted hover:text-ink'
               }`}
             >
-              Downhole
+              <span className={`w-2 h-2 rounded-full ${showDownhole ? 'bg-white' : 'bg-status-info'}`} />
+              <span>Downhole Pump</span>
             </button>
           </div>
 
@@ -72,9 +132,9 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
             <button
               type="button"
               onClick={() => setSelectedLoopKey('current')}
-              className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
                 selectedLoopKey === 'current'
-                  ? 'bg-surface text-ink shadow-sm'
+                  ? 'bg-surface text-ink shadow-sm font-semibold'
                   : 'text-ink-secondary hover:text-ink'
               }`}
             >
@@ -83,9 +143,9 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
             <button
               type="button"
               onClick={() => setSelectedLoopKey('previous')}
-              className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
                 selectedLoopKey === 'previous'
-                  ? 'bg-surface text-ink shadow-sm'
+                  ? 'bg-surface text-ink shadow-sm font-semibold'
                   : 'text-ink-secondary hover:text-ink'
               }`}
             >
@@ -94,9 +154,9 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
             <button
               type="button"
               onClick={() => setSelectedLoopKey('baseline')}
-              className={`px-3 py-1 rounded text-xs font-semibold transition-all ${
+              className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
                 selectedLoopKey === 'baseline'
-                  ? 'bg-surface text-ink shadow-sm'
+                  ? 'bg-surface text-ink shadow-sm font-semibold'
                   : 'text-ink-secondary hover:text-ink'
               }`}
             >
@@ -106,207 +166,346 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
         </div>
       </div>
 
-      {/* SVG Plotter */}
+      {/* Sleek, Professional Engineering Legend Bar */}
+      <div className="flex items-center justify-between px-1 text-xs text-ink-muted font-sans flex-wrap gap-2">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <span className="w-3.5 h-1 rounded bg-petroleum inline-block" />
+            <span className="text-ink text-xs font-medium">Surface Card (Polished Rod)</span>
+            <span className="font-mono text-[11px] text-ink-muted">· Peak 88.4 kN</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3.5 h-1 rounded bg-status-info inline-block" />
+            <span className="text-ink text-xs font-medium">Downhole Card (Pump Projection)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3.5 h-0.5 border-t border-dashed border-status-info inline-block" />
+            <span className="text-ink-secondary text-xs">Ideal 100% Envelope</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 text-xs">
+          <span className="text-status-crit font-mono font-medium flex items-center gap-1">
+            <span className="w-2.5 h-0.5 bg-status-crit inline-block" />
+            Yield Limit: 90.0 kN
+          </span>
+          <span className="text-ink-muted">·</span>
+          <span className="font-mono text-ink-secondary">Inception: 2.80 m</span>
+        </div>
+      </div>
+
+      {/* SVG Plotter with 1:1 proportional viewBox scale */}
       <div className="w-full overflow-x-auto">
         <svg
-          viewBox="0 0 720 370"
-          className="w-full h-auto min-w-[580px] select-none"
+          viewBox="0 0 1200 410"
+          className="w-full h-auto min-w-[700px] select-none overflow-visible"
           role="img"
-          aria-label="SRP Dyno Card Plot"
+          aria-label="Full-Cycle Dynamometer Load Card"
         >
-          {/* Background grid canvas */}
-          <rect x="60" y="30" width="610" height="308" className="fill-canvas-subtle" />
+          {/* Grid Canvas Background */}
+          <rect
+            x="70"
+            y="38"
+            width="1070"
+            height="312"
+            rx="4"
+            fill="var(--canvas-subtle)"
+            opacity="0.4"
+          />
 
-          {/* Horizontal grid lines and Y-axis labels (Load in kN) */}
+          {/* Y-Axis Title (Cleanly at top-left, not rotated) */}
+          <text
+            x="70"
+            y="25"
+            className="font-mono text-[10.5px] font-semibold tracking-wider uppercase fill-ink-muted"
+          >
+            Polished Rod Load (kN)
+          </text>
+
+          {/* Horizontal grid lines & Y-axis labels */}
           {yTicks.map((val) => {
             const y = dy(val);
+            const isZero = val === 0;
             return (
               <g key={`y-${val}`}>
                 <line
-                  x1="60"
+                  x1="70"
                   y1={y}
-                  x2="670"
+                  x2="1140"
                   y2={y}
-                  className="stroke-border-subtle"
-                  strokeWidth="1"
-                  strokeDasharray={val === 0 || val === 90 ? '' : '3 3'}
+                  className={isZero ? 'stroke-border' : 'stroke-border-subtle'}
+                  strokeWidth={isZero ? '1.5' : '1'}
+                  strokeDasharray={isZero ? '' : '3 3'}
                 />
                 <text
-                  x="52"
+                  x="60"
                   y={y}
                   textAnchor="end"
                   dominantBaseline="middle"
                   className="font-mono text-[10px] fill-ink-muted"
                 >
-                  {val} kN
+                  {val}
                 </text>
               </g>
             );
           })}
 
-          {/* Section 2 Yield Limit Warning Line (90 kN) */}
-          <line
-            x1="60"
-            y1={dy(90)}
-            x2="670"
-            y2={dy(90)}
-            className="stroke-status-crit"
-            strokeWidth="1.5"
-            strokeDasharray="4 3"
-          />
-          <text
-            x="660"
-            y={parseFloat(dy(90)) - 6}
-            textAnchor="end"
-            className="font-mono text-[10px] font-semibold fill-status-crit"
-          >
-            Rod Yield Limit: 90.0 kN
-          </text>
+          {/* Rod Yield Limit Critical Line (90 kN) */}
+          <g>
+            <line
+              x1="70"
+              y1={dy(90)}
+              x2="1140"
+              y2={dy(90)}
+              stroke="var(--status-crit)"
+              strokeWidth="1"
+              strokeDasharray="5 3"
+              opacity="0.75"
+            />
+            <text
+              x="1136"
+              y={parseFloat(dy(90)) - 6}
+              textAnchor="end"
+              className="font-mono text-[10px] font-semibold fill-status-crit"
+            >
+              Yield Limit: 90.0 kN
+            </text>
+          </g>
 
-          {/* Vertical grid lines and X-axis labels (Stroke displacement in m) */}
+          {/* Vertical grid lines & X-axis labels */}
           {xTicks.map((val) => {
             const x = dx(val);
+            const isMajor = val === 0 || val === 1.0 || val === 2.0 || val === 3.0 || val === 4.0;
             return (
               <g key={`x-${val}`}>
                 <line
                   x1={x}
-                  y1="30"
+                  y1="38"
                   x2={x}
-                  y2="338"
-                  className="stroke-border-subtle"
+                  y2="350"
+                  className={isMajor ? 'stroke-border-subtle' : 'stroke-border-subtle/50'}
                   strokeWidth="1"
+                  strokeDasharray={isMajor ? '' : '2 2'}
                 />
                 <text
                   x={x}
-                  y="356"
+                  y="368"
                   textAnchor="middle"
-                  className="font-mono text-[10px] fill-ink-muted"
+                  className={`font-mono text-[10px] ${
+                    isMajor ? 'fill-ink font-medium' : 'fill-ink-muted'
+                  }`}
                 >
-                  {val.toFixed(1)} m
+                  {val.toFixed(1)}m
                 </text>
               </g>
             );
           })}
 
-          {/* Ideal Theoretical Pump Envelope */}
-          <rect
-            x={dx(0.15)}
-            y={dy(60)}
-            width={parseFloat(dx(3.4)) - parseFloat(dx(0.15))}
-            height={parseFloat(dy(15)) - parseFloat(dy(60))}
-            fill="rgba(96, 165, 250, 0.05)"
-            stroke="var(--status-info)"
-            strokeWidth="1"
-            strokeDasharray="4 4"
-          />
+          {/* X-Axis Title (Centered) */}
+          <text
+            x="605"
+            y="392"
+            textAnchor="middle"
+            className="font-mono text-[10.5px] font-medium tracking-wider uppercase fill-ink-muted"
+          >
+            Polished Rod Displacement (m) · 3.65 m Total Stroke Length
+          </text>
 
-          {/* Downhole Pump Card */}
-          {showDownhole && (
-            <polyline
-              points={downholePoly}
-              fill="rgba(96, 165, 250, 0.15)"
+          {/* Ideal Theoretical 100% Full Pump Card Envelope */}
+          <g>
+            <rect
+              x={dx(0.15)}
+              y={dy(60)}
+              width={parseFloat(dx(3.4)) - parseFloat(dx(0.15))}
+              height={parseFloat(dy(14)) - parseFloat(dy(60))}
+              rx="2"
+              fill="rgba(56, 189, 248, 0.04)"
               stroke="var(--status-info)"
-              strokeWidth="2"
-              strokeLinejoin="round"
+              strokeWidth="1"
+              strokeDasharray="4 4"
             />
-          )}
+            <text
+              x={parseFloat(dx(0.22))}
+              y={parseFloat(dy(60)) + 14}
+              className="font-mono text-[9.5px] font-medium fill-status-info opacity-75 tracking-wider uppercase"
+            >
+              100% Ideal Pump Envelope
+            </text>
+          </g>
 
-          {/* Surface Polished Rod Card */}
-          {showSurface && (
-            <polyline
-              points={surfacePoly}
-              fill="var(--petroleum-tint)"
-              stroke="var(--petroleum)"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-          )}
-
-          {/* Fluid Pound Inception Callout if present */}
-          {currentLoop.fluidPoundPoint && (
+          {/* Downhole Projected Pump Card (Cyan) */}
+          {showDownhole && (
             <g>
-              <line
-                x1={dx(currentLoop.fluidPoundPoint.x)}
-                y1="30"
-                x2={dx(currentLoop.fluidPoundPoint.x)}
-                y2="338"
-                className="stroke-status-crit"
-                strokeWidth="1.5"
-                strokeDasharray="3 3"
+              <polyline
+                points={downholePoly}
+                fill="rgba(56, 189, 248, 0.14)"
+                stroke="var(--status-info)"
+                strokeWidth="1.75"
+                strokeLinejoin="round"
               />
-              <circle
-                cx={dx(currentLoop.fluidPoundPoint.x)}
-                cy={dy(currentLoop.fluidPoundPoint.y)}
-                r="6"
-                className="fill-status-crit stroke-surface"
-                strokeWidth="2"
+            </g>
+          )}
+
+          {/* Surface Polished Rod Card (Petroleum Gold) */}
+          {showSurface && (
+            <g>
+              <polyline
+                points={surfacePoly}
+                fill="var(--petroleum-tint)"
+                stroke="var(--petroleum)"
+                strokeWidth="2.25"
+                strokeLinejoin="round"
               />
-              <line
-                x1={dx(currentLoop.fluidPoundPoint.x)}
-                y1={dy(currentLoop.fluidPoundPoint.y)}
-                x2={parseFloat(dx(currentLoop.fluidPoundPoint.x)) + 35}
-                y2={parseFloat(dy(currentLoop.fluidPoundPoint.y)) + 30}
-                className="stroke-status-crit"
-                strokeWidth="1.5"
-              />
-              <rect
-                x={parseFloat(dx(currentLoop.fluidPoundPoint.x)) + 20}
-                y={parseFloat(dy(currentLoop.fluidPoundPoint.y)) + 30}
-                width="210"
-                height="24"
-                rx="4"
-                className="fill-surface stroke-status-crit/60"
-              />
+            </g>
+          )}
+
+          {/* Phase Annotations (Calibrated to match site typography) */}
+          {showSurface && (
+            <g>
               <text
-                x={parseFloat(dx(currentLoop.fluidPoundPoint.x)) + 125}
-                y={parseFloat(dy(currentLoop.fluidPoundPoint.y)) + 46}
+                x={dx(1.8)}
+                y={parseFloat(dy(88.4)) - 8}
                 textAnchor="middle"
-                className="font-mono text-[10px] font-bold fill-status-crit"
+                className="font-mono text-[10px] font-medium fill-petroleum opacity-85"
               >
-                {currentLoop.fluidPoundPoint.label}
+                ▲ Upstroke (Peak 88.4 kN)
+              </text>
+              <text
+                x={dx(1.4)}
+                y={parseFloat(dy(25.4)) + 15}
+                textAnchor="middle"
+                className="font-mono text-[10px] font-medium fill-ink-muted opacity-80"
+              >
+                ▼ Downstroke (Min 24.6 kN)
               </text>
             </g>
           )}
 
-          {/* Legend */}
-          <g transform="translate(70, 45)">
-            <rect
-              x="0"
-              y="0"
-              width="280"
-              height="28"
-              rx="4"
-              className="fill-surface/90 stroke-border"
-            />
-            <line x1="12" y1="14" x2="32" y2="14" stroke="var(--petroleum)" strokeWidth="2.5" />
-            <text x="38" y="18" className="font-sans text-[11px] font-medium fill-ink">
-              Surface Card (Peak 88.4 kN)
-            </text>
-            <line x1="170" y1="14" x2="190" y2="14" stroke="var(--status-info)" strokeWidth="2" />
-            <text x="196" y="18" className="font-sans text-[11px] font-medium fill-ink">
-              Downhole Projected
-            </text>
-          </g>
+          {/* Fluid Pound Inception Callout (Cleanly proportioned) */}
+          {currentLoop.fluidPoundPoint && (
+            <g>
+              {/* Vertical guideline */}
+              <line
+                x1={dx(currentLoop.fluidPoundPoint.x)}
+                y1="38"
+                x2={dx(currentLoop.fluidPoundPoint.x)}
+                y2="350"
+                stroke="var(--status-crit)"
+                strokeWidth="1"
+                strokeDasharray="4 3"
+                opacity="0.75"
+              />
+
+              {/* Point circle */}
+              <circle
+                cx={dx(currentLoop.fluidPoundPoint.x)}
+                cy={dy(currentLoop.fluidPoundPoint.y)}
+                r="7"
+                fill="var(--status-crit)"
+                opacity="0.25"
+              />
+              <circle
+                cx={dx(currentLoop.fluidPoundPoint.x)}
+                cy={dy(currentLoop.fluidPoundPoint.y)}
+                r="3.5"
+                fill="var(--status-crit)"
+                stroke="var(--surface)"
+                strokeWidth="1.5"
+              />
+
+              {/* Leader Line directed to the left into open plot area */}
+              <polyline
+                points={`
+                  ${dx(currentLoop.fluidPoundPoint.x)},${dy(currentLoop.fluidPoundPoint.y)}
+                  ${parseFloat(dx(currentLoop.fluidPoundPoint.x)) - 35},${parseFloat(dy(currentLoop.fluidPoundPoint.y)) - 25}
+                  ${parseFloat(dx(currentLoop.fluidPoundPoint.x)) - 65},${parseFloat(dy(currentLoop.fluidPoundPoint.y)) - 25}
+                `}
+                fill="none"
+                stroke="var(--status-crit)"
+                strokeWidth="1"
+              />
+
+              {/* Callout Badge */}
+              <rect
+                x={parseFloat(dx(currentLoop.fluidPoundPoint.x)) - 265}
+                y={parseFloat(dy(currentLoop.fluidPoundPoint.y)) - 38}
+                width="200"
+                height="26"
+                rx="4"
+                fill="var(--surface)"
+                stroke="var(--status-crit)"
+                strokeWidth="1"
+                opacity="0.95"
+              />
+
+              <text
+                x={parseFloat(dx(currentLoop.fluidPoundPoint.x)) - 165}
+                y={parseFloat(dy(currentLoop.fluidPoundPoint.y)) - 21}
+                textAnchor="middle"
+                className="font-mono text-[10px] font-bold fill-status-crit"
+              >
+                ⚠ Fluid Pound @ 2.80 m (−71% fill)
+              </text>
+            </g>
+          )}
         </svg>
       </div>
 
       {/* Dyno Diagnostic Summary Footer */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-surface-secondary rounded-lg border border-border-subtle text-xs">
-        <div>
-          <span className="text-ink-muted text-[11px] block">Pump Displacement</span>
-          <span className="font-mono font-semibold text-ink text-sm">3.65 m stroke</span>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-3 bg-surface-secondary/70 rounded-xl border border-border text-xs">
+        <div className="flex flex-col gap-1 p-2 rounded-lg bg-surface border border-border-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-ink-muted text-[10px] uppercase tracking-wider font-semibold">
+              Stroke Length
+            </span>
+            <Activity className="w-3.5 h-3.5 text-petroleum" />
+          </div>
+          <span className="font-mono font-bold text-ink text-sm">
+            {diagnosticData.displacement}
+          </span>
+          <span className="text-[11px] text-ink-muted">Rated polished rod travel</span>
         </div>
-        <div>
-          <span className="text-ink-muted text-[11px] block">Calculated Fillage</span>
-          <span className="font-mono font-semibold text-status-crit text-sm">84.6 % (Sluggish)</span>
+
+        <div className="flex flex-col gap-1 p-2 rounded-lg bg-surface border border-border-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-ink-muted text-[10px] uppercase tracking-wider font-semibold">
+              Pump Barrel Fillage
+            </span>
+            <span className={`w-2 h-2 rounded-full ${selectedLoopKey === 'baseline' ? 'bg-status-green' : 'bg-status-crit animate-pulse'}`} />
+          </div>
+          <span className={`font-mono font-bold text-sm ${diagnosticData.fillageColor}`}>
+            {diagnosticData.fillage}
+          </span>
+          <span className="text-[11px] text-ink-secondary">{diagnosticData.fillageStatus}</span>
         </div>
-        <div>
-          <span className="text-ink-muted text-[11px] block">Downstroke Inception</span>
-          <span className="font-mono font-semibold text-status-crit text-sm">2.80 m (Fluid Pound)</span>
+
+        <div className="flex flex-col gap-1 p-2 rounded-lg bg-surface border border-border-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-ink-muted text-[10px] uppercase tracking-wider font-semibold">
+              Pound Inception
+            </span>
+            {selectedLoopKey === 'baseline' ? (
+              <CheckCircle className="w-3.5 h-3.5 text-status-green" />
+            ) : (
+              <AlertTriangle className="w-3.5 h-3.5 text-status-crit" />
+            )}
+          </div>
+          <span className={`font-mono font-bold text-sm ${diagnosticData.inceptionColor}`}>
+            {diagnosticData.inception}
+          </span>
+          <span className="text-[11px] text-ink-secondary">{diagnosticData.inceptionDesc}</span>
         </div>
-        <div>
-          <span className="text-ink-muted text-[11px] block">Minimum Load Margin</span>
-          <span className="font-mono font-semibold text-status-green text-sm">+24.6 kN (No Float)</span>
+
+        <div className="flex flex-col gap-1 p-2 rounded-lg bg-surface border border-border-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-ink-muted text-[10px] uppercase tracking-wider font-semibold">
+              Minimum Load Margin
+            </span>
+            <CheckCircle className="w-3.5 h-3.5 text-status-green" />
+          </div>
+          <span className="font-mono font-bold text-status-green text-sm">
+            {diagnosticData.minMargin}
+          </span>
+          <span className="text-[11px] text-ink-secondary">{diagnosticData.minMarginDesc}</span>
         </div>
       </div>
     </div>

@@ -24,6 +24,7 @@ export const AlertsPage: React.FC = () => {
   } = useAlertStore();
 
   const [expandedAlerts, setExpandedAlerts] = useState<Record<string, boolean>>({
+    'ALM-4415': true,
     'ALM-4412': true,
   });
 
@@ -204,19 +205,23 @@ export const AlertsPage: React.FC = () => {
                         <div>
                           <span className="text-[9.5px] uppercase font-semibold text-ink-muted block font-sans">Current Value</span>
                           <span className="font-bold text-status-crit text-sm">
-                            {alert.id === 'ALM-4412' ? '84.6 %' : alert.evidence[0]?.value || 'Abnormal'}
+                            {alert.observedValue || alert.evidence[0]?.value || 'Abnormal'}
                           </span>
                         </div>
                         <div>
                           <span className="text-[9.5px] uppercase font-semibold text-ink-muted block font-sans">Expected Range</span>
                           <span className="font-semibold text-status-green">
-                            {alert.id === 'ALM-4412' ? '> 88.0 %' : 'Baseline Envelope'}
+                            {alert.threshold || 'Baseline Envelope'}
                           </span>
                         </div>
                         <div className="sm:col-span-2">
                           <span className="text-[9.5px] uppercase font-semibold text-ink-muted block font-sans">Primary Impact</span>
                           <span className="text-ink font-sans text-xs truncate block">
-                            Potential Net Oil Deficit & Rod Fatigue
+                            {alert.id === 'ALM-4415'
+                              ? 'Critical Rod String Parting Risk & Fatigue Acceleration'
+                              : alert.id === 'ALM-4412'
+                              ? 'Potential Net Oil Deficit & Downhole Shock Waves'
+                              : 'Subsystem Drift & Operating Margin Softening'}
                           </span>
                         </div>
                       </div>

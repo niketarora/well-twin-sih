@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: str = ""
     SUPABASE_DB_URL: str = ""
 
+    # Gemini AI configuration
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-1.5-flash"
+
     # Primary Database URL: uses SUPABASE_DB_URL if set, else falls back to DATABASE_URL or SQLite
     DATABASE_URL: str = "sqlite+aiosqlite:///./well_twin.db"
 
