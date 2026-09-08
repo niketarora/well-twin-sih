@@ -29,10 +29,12 @@ export const LandingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'thermal' | 'srp' | 'twin' | 'ai'>('thermal');
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
 
-  useEffect(() => {
-    // Ensure clean light theme is active for the landing page
-    document.documentElement.classList.remove('dark');
-  }, []);
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const marqueeLogos = [
     { src: m1, alt: 'myGov' },
@@ -185,16 +187,16 @@ export const LandingPage: React.FC = () => {
         </div>
 
         <nav className="hidden md:flex items-center gap-7 text-xs font-bold text-[#66717C]">
-          <a href="#overview" className="hover:text-[#C69A45] transition-colors">Overview</a>
-          <a href="#marquee" className="hover:text-[#C69A45] transition-colors">Govt Initiatives</a>
-          <a href="#pillars" className="hover:text-[#C69A45] transition-colors">Solution Pillars</a>
-          <a href="#problem-context" className="hover:text-[#C69A45] transition-colors">Field Specifications</a>
+          <button onClick={() => scrollToSection('overview')} className="hover:text-[#C69A45] transition-colors font-bold">Overview</button>
+          <button onClick={() => scrollToSection('pillars')} className="hover:text-[#C69A45] transition-colors font-bold">Solution Pillars</button>
+          <button onClick={() => scrollToSection('problem-context')} className="hover:text-[#C69A45] transition-colors font-bold">Field Specifications</button>
+          <button onClick={() => scrollToSection('marquee')} className="hover:text-[#C69A45] transition-colors font-bold">Govt Initiatives</button>
         </nav>
 
         <div className="flex items-center gap-3">
           <motion.button
             whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => navigate('/overview')}
             className="px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-[#C69A45] to-[#8A6A22] hover:from-[#B58B3A] hover:to-[#8A6A22] text-white font-extrabold text-xs shadow-md shadow-amber-600/20 flex items-center gap-2 transition-all"
           >
@@ -205,7 +207,7 @@ export const LandingPage: React.FC = () => {
       </header>
 
       {/* 3. Light Hero Section */}
-      <section id="overview" className="relative overflow-hidden py-14 lg:py-18 px-4 lg:px-8 border-b border-[#E2E6EA] bg-gradient-to-b from-[#F4F6F8] via-white to-[#F4F6F8]">
+      <section id="overview" className="scroll-mt-24 relative overflow-hidden py-14 lg:py-18 px-4 lg:px-8 border-b border-[#E2E6EA] bg-gradient-to-b from-[#F4F6F8] via-white to-[#F4F6F8]">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7 space-y-5">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-extrabold shadow-2xs">
@@ -251,12 +253,14 @@ export const LandingPage: React.FC = () => {
                 <ArrowRight className="w-4 h-4" />
               </motion.button>
 
-              <a
-                href="#pillars"
-                className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-[#17212B] font-bold text-xs sm:text-sm border border-[#E2E6EA] transition-colors shadow-2xs"
+              <button
+                type="button"
+                onClick={() => scrollToSection('pillars')}
+                className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-[#17212B] font-bold text-xs sm:text-sm border border-[#E2E6EA] transition-colors shadow-2xs cursor-pointer flex items-center gap-2"
               >
-                Explore Solution Pillars
-              </a>
+                <span>Explore Solution Pillars</span>
+                <ArrowRight className="w-4 h-4 text-[#C69A45]" />
+              </button>
             </div>
           </div>
 
@@ -307,7 +311,136 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 7. Call to Action Banner (Light Scheme Matching Workstation) */}
+      {/* 4. Solution Pillars Interactive Section */}
+      <section id="pillars" className="scroll-mt-24 py-16 px-4 lg:px-8 max-w-6xl mx-auto space-y-10">
+        <div className="text-center space-y-3">
+          <span className="text-[#C69A45] text-xs font-mono font-black tracking-widest uppercase">
+            Multi-Physics Engineering Architecture
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#17212B]">
+            Four Core Pillars of the Digital Twin Solution
+          </h2>
+          <p className="text-[#66717C] text-xs sm:text-sm max-w-2xl mx-auto">
+            Addressing CSS steam cycle optimization, sucker rod pump mechanical reliability, and multi-physics AI prediction.
+          </p>
+        </div>
+
+        {/* Pillar Tabs */}
+        <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-white border border-[#E2E6EA] max-w-2xl mx-auto shadow-2xs">
+          {solutionPillars.map((pillar) => {
+            const Icon = pillar.icon;
+            const isSelected = activeTab === pillar.id;
+            return (
+              <button
+                key={pillar.id}
+                onClick={() => setActiveTab(pillar.id as any)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  isSelected
+                    ? 'bg-[#C69A45] text-white shadow-md font-black'
+                    : 'text-[#66717C] hover:text-[#17212B] hover:bg-[#F8F9FA]'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-[#C69A45]'}`} />
+                <span>{pillar.title.split(' ')[0]} {pillar.title.split(' ')[1]}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Selected Pillar Content Card */}
+        <AnimatePresence mode="wait">
+          {solutionPillars
+            .filter((p) => p.id === activeTab)
+            .map((pillar) => {
+              const Icon = pillar.icon;
+              return (
+                <motion.div
+                  key={pillar.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className={`p-6 sm:p-8 rounded-2xl border bg-white ${pillar.borderColor} shadow-card grid grid-cols-1 md:grid-cols-12 gap-8 items-center`}
+                >
+                  <div className="md:col-span-8 space-y-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${pillar.badgeColor}`}>
+                      {pillar.subtitle}
+                    </span>
+
+                    <h3 className="text-xl sm:text-2xl font-black text-[#17212B]">
+                      {pillar.title}
+                    </h3>
+
+                    <p className="text-[#66717C] text-sm leading-relaxed font-medium">
+                      {pillar.desc}
+                    </p>
+
+                    <div className="space-y-2 pt-2">
+                      {pillar.highlights.map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-2.5 text-xs font-bold text-[#17212B]">
+                          <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-4 flex justify-center">
+                    <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-[#F8F9FA] border border-[#E2E6EA] shadow-card flex items-center justify-center text-[#C69A45]">
+                      <Icon className="w-12 h-12 sm:w-16 sm:h-16" />
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+        </AnimatePresence>
+      </section>
+
+      {/* 5. SIH Problem Statement Details */}
+      <section id="problem-context" className="scroll-mt-24 py-16 px-4 lg:px-8 max-w-6xl mx-auto space-y-8 border-t border-[#E2E6EA]">
+        <div className="text-center space-y-3">
+          <span className="text-emerald-700 text-xs font-mono font-bold tracking-widest uppercase">
+            SIH26120 Specifications
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#17212B]">
+            Baghewala Field Operational Context & Objectives
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-2xl bg-white border border-[#E2E6EA] shadow-xs space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 font-black">
+              1
+            </div>
+            <h3 className="font-bold text-base text-[#17212B]">Heavy Oil Recovery</h3>
+            <p className="text-xs text-[#66717C] leading-relaxed font-medium">
+              Jodhpur Sandstone produces heavy crude (17–19° API) under low reservoir temperature (46–48°C), requiring Cyclic Steam Stimulation (CSS) to mobilize fluids.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-[#E2E6EA] shadow-xs space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700 font-black">
+              2
+            </div>
+            <h3 className="font-bold text-base text-[#17212B]">Rod Floating Prevention</h3>
+            <p className="text-xs text-[#66717C] leading-relaxed font-medium">
+              As steam chamber cools, crude viscosity surges—causing downstroke rod drag, rod floating, Traveling Valve impact, and frequent mechanical failures.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-[#E2E6EA] shadow-xs space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 font-black">
+              3
+            </div>
+            <h3 className="font-bold text-base text-[#17212B]">Predictive SOR Optimization</h3>
+            <p className="text-xs text-[#66717C] leading-relaxed font-medium">
+              Continuous multi-physics coupling minimizes Steam-Oil Ratio (SOR) and VFD energy consumption while maximizing total cumulative oil output.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. Call to Action Banner (Light Scheme Matching Workstation) */}
       <section className="py-14 px-4 lg:px-8 bg-white border-y border-[#E2E6EA] text-center space-y-5">
         <div className="max-w-3xl mx-auto space-y-3">
           <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-50 border border-amber-200 text-[#C69A45] inline-block">
