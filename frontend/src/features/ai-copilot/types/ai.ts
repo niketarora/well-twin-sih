@@ -74,6 +74,31 @@ export interface AiContext {
   };
 }
 
+export interface AiConversationState {
+  selectedWellId?: string;
+  lastIntent?: AiIntent;
+  lastReferencedPage?: string;
+  turnCount: number;
+}
+
+export interface WellComparisonItem {
+  wellId: string;
+  wellCode: string;
+  oilRateBopd: number;
+  waterCutPct: number;
+  bhtC: number;
+  fillagePct: number;
+  healthScore: number;
+  dominantConcern?: string;
+  status: string;
+}
+
+export interface DataSufficiency {
+  isSufficient: boolean;
+  availableMetrics: string[];
+  missingMetrics: string[];
+}
+
 export interface AiResponse {
   answer: string;
   intent: AiIntent;
@@ -81,6 +106,9 @@ export interface AiResponse {
   evidence?: AiEvidence[];
   actions?: AiAction[];
   warnings?: string[];
+  comparison?: WellComparisonItem[];
+  dataSufficiency?: DataSufficiency;
+  audioBase64?: string | null;
 }
 
 export interface AiMessage {
@@ -90,5 +118,9 @@ export interface AiMessage {
   timestamp: string;
   response?: AiResponse;
   isLoading?: boolean;
+  loadingStage?: string;
+  audioBase64?: string | null;
   error?: string;
+  isVoice?: boolean;
 }
+

@@ -1,116 +1,113 @@
-import { AiContext, AiResponse, AiUiContext } from '../types/ai';
-import { buildAiContext } from './contextBuilder';
-import { GeminiProvider } from './providers/GeminiProvider';
-import { MockAiProvider } from './providers/MockAiProvider';
-import { AiProvider } from './providers/AiProvider';
-import { resolveRoute, normalizePageKey, isValidPage } from '../navigationRegistry';
+import { apiFetch } from '../../../services/apiClient';
+import { AiAction, AiEvidence, AiIntent, AiResponse, AiUiContext, EvidenceProvenance } from '../types/ai';
+
+interface NavigatorNavigationResponse {
+  target: string;
+  well_id?: string | null;
+  route: string;
+  label: string;
+}
+
+interface NavigatorEvidenceResponse {
+  label: string;
+  value: string | number;
+  unit?: string;
+  provenance: string;
+}
+
+interface NavigatorApiResponse {
+  type: string;
+  intent: string;
+  message: string;
+  well_id?: string | null;
+  navigation?: NavigatorNavigationResponse | null;
+  evidence?: NavigatorEvidenceResponse[];
+  audio_base64?: string | null;
+  metadata?: Record<string, any>;
+}
+
+export interface ProcessQueryOptions {
+  includeAudio?: boolean;
+}
 
 class AiOrchestrator {
-  private activeProvider: AiProvider;
-
-  constructor() {
-    // Default to GeminiProvider which auto-falls back to MockAiProvider if Gemini is unreachable
-    this.activeProvider = new GeminiProvider();
-  }
-
-  setProvider(provider: AiProvider) {
-    this.activeProvider = provider;
-  }
-
-  async processQuery(prompt: string, uiContext: AiUiContext): Promise<AiResponse> {
-    const q = prompt.toLowerCase().trim();
+  /**
+   * Routes user questions directly to the unified Gemini + DB + Petroleum Engineer + Sarvam TTS pipeline.
+   * Endpoint: POST /api/v1/ai/navigator
+   */
+  async processQuery(
+    prompt: string,
+    uiContext: AiUiContext,
+    options?: ProcessQueryOptions
+  ): Promise<AiResponse> {
     const currentWellId = uiContext.currentWellId || 'well-bw-017';
+    const includeAudio = options?.includeAudio ?? true;
 
-    // 1. FAST PATH: Direct Navigation Command via Local Intent Router (< 5ms)
-    const directNavigation = this.tryDirectNavigation(q, currentWellId);
-    if (directNavigation) {
-      return directNavigation;
-    }
-
-    // 2. Build full multi-physics context
-    const context: AiContext = await buildAiContext(uiContext);
-
-    // 3. Delegate complex queries to active AI provider
     try {
-      return await this.activeProvider.generateResponse(prompt, context);
-    } catch (err: any) {
-      console.warn('AI Provider execution failed, using fallback engine:', err);
-      const fallback = new MockAiProvider();
-      return fallback.generateResponse(prompt, context);
-    }
-  }
+      const payload = {
+        message: prompt.trim(),
+        current_page: uiContext.currentPage || 'field_map',
+        selected_well: currentWellId,
+        include_audio: includeAudio,
+        context: {
+          fieldId: uiContext.fieldId,
+          fieldName: uiContext.fieldName,
+          section: uiContext.currentSection,
+        },
+      };
 
-  private tryDirectNavigation(query: string, wellId: string): AiResponse | null {
-    const navPatterns: Array<{ patterns: string[]; page: string; label: string; answer: string }> = [
-      {
-        patterns: ['open srp', 'go to srp', 'show srp', 'open pump', 'show pump', 'view dyno'],
-        page: 'srp',
-        label: 'Open SRP Lift Dynamics',
-        answer: 'Opening Sucker Rod Pump (SRP) Lift Dynamics workstation.',
-      },
-      {
-        patterns: ['open reservoir', 'go to reservoir', 'show reservoir', 'open thermal', 'view thermal'],
-        page: 'reservoir',
-        label: 'Open Reservoir / Thermal',
-        answer: 'Opening Reservoir and Thermal monitoring workstation.',
-      },
-      {
-        patterns: ['open overview', 'go to overview', 'show overview', 'open command center'],
-        page: 'overview',
-        label: 'Open Well Overview',
-        answer: 'Opening Well Twin Command Center overview.',
-      },
-      {
-        patterns: ['open production', 'go to production', 'show production', 'surface production'],
-        page: 'production',
-        label: 'Open Surface Production',
-        answer: 'Opening Surface Production monitoring workstation.',
-      },
-      {
-        patterns: ['open wellbore', 'go to wellbore', 'show wellbore', 'wellbore hydraulics'],
-        page: 'wellbore',
-        label: 'Open Wellbore Hydrodynamics',
-        answer: 'Opening Wellbore Hydrodynamics workstation.',
-      },
-      {
-        patterns: ['open field', 'go home', 'open map', 'field map', 'all wells'],
-        page: 'home',
-        label: 'Open Baghewala Field Map',
-        answer: 'Navigating to Baghewala Field GIS Map.',
-      },
-      {
-        patterns: ['open alerts', 'go to alerts', 'show alerts', 'review alerts'],
-        page: 'alerts',
-        label: 'Open Operational Alerts',
-        answer: 'Opening Operational Alerts triage page.',
-      },
-      {
-        patterns: ['open css', 'show css', 'css cycle', 'cycle tracker'],
-        page: 'css',
-        label: 'Open CSS Cycle Tracker',
-        answer: 'Opening Cyclic Steam Stimulation (CSS) Cycle Tracker.',
-      },
-    ];
+      const res = await apiFetch<NavigatorApiResponse>('/ai/navigator', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
 
-    for (const item of navPatterns) {
-      if (item.patterns.some(p => query === p || query === `take me to ${p.replace('open ', '')}`)) {
-        return {
-          answer: item.answer,
-          intent: 'NAVIGATION',
-          confidence: 1.0,
-          actions: [
+      // Map backend evidence provenance
+      const evidence: AiEvidence[] = (res.evidence || []).map((e) => ({
+        label: e.label,
+        value: e.value,
+        unit: e.unit,
+        provenance: (e.provenance || 'OBSERVED') as EvidenceProvenance,
+      }));
+
+      // Map backend intent
+      let mappedIntent: AiIntent = 'GENERAL_ENGINEERING';
+      if (res.intent === 'NAVIGATE' || res.type === 'NAVIGATION') {
+        mappedIntent = 'NAVIGATION';
+      } else if (
+        ['WEBSITE_DATA_QUERY', 'VIEW_PRODUCTION', 'VIEW_WELL_HEALTH', 'SELECT_WELL'].includes(res.intent)
+      ) {
+        mappedIntent = 'DATA_LOOKUP';
+      } else if (['EXPLAIN_WELL', 'EXPLAIN_ALERT'].includes(res.intent)) {
+        mappedIntent = 'EXPLANATION';
+      } else if (res.intent === 'GENERAL_KNOWLEDGE') {
+        mappedIntent = 'GENERAL_ENGINEERING';
+      }
+
+      // Map backend navigation action
+      const actions: AiAction[] = res.navigation
+        ? [
             {
               type: 'OPEN_PAGE',
-              page: item.page,
-              wellId,
-              label: item.label,
+              page: res.navigation.target,
+              wellId: res.navigation.well_id || currentWellId,
+              label: res.navigation.label,
+              params: { route: res.navigation.route },
             },
-          ],
-        };
-      }
-    }
+          ]
+        : [];
 
-    return null;
+      return {
+        answer: res.message,
+        intent: mappedIntent,
+        confidence: res.metadata?.confidence ?? 0.95,
+        evidence: evidence.length > 0 ? evidence : undefined,
+        actions: actions.length > 0 ? actions : undefined,
+        audioBase64: res.audio_base64,
+      };
+    } catch (err: any) {
+      console.error('[AiOrchestrator] Failed to execute live AI Navigator query:', err);
+      throw err;
+    }
   }
 }
 

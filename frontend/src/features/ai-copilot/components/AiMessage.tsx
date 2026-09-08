@@ -4,6 +4,9 @@ import { AiMessage as AiMessageType } from '../types/ai';
 import { ConfidenceBadge } from './ConfidenceBadge';
 import { EvidenceList } from './EvidenceList';
 import { AiActionButton } from './AiActionButton';
+import { ComparisonTable } from './ComparisonTable';
+import { DataSufficiencyNotice } from './DataSufficiencyNotice';
+import { AudioPlayer } from '../../ai-navigator/components/AudioPlayer';
 
 interface AiMessageProps {
   message: AiMessageType;
@@ -55,17 +58,19 @@ export const AiMessage: React.FC<AiMessageProps> = ({ message, onActionExecuted 
 
       {/* Message Bubble */}
       <div
-        className={`max-w-[85%] rounded-xl p-3.5 space-y-2.5 shadow-subtle ${
+        className={`max-w-[88%] rounded-xl p-3.5 space-y-2.5 shadow-subtle ${
           isUser
             ? 'bg-petroleum text-white'
             : 'bg-surface border border-border text-ink'
         }`}
       >
-        {/* Loading placeholder */}
+        {/* Loading placeholder with truthful stage progression */}
         {message.isLoading && (
           <div className="flex items-center gap-2 text-ink-muted text-xs py-1">
             <Loader2 className="w-3.5 h-3.5 animate-spin text-petroleum dark:text-cyan-400" />
-            <span>Analyzing surveillance data & multi-physics twin...</span>
+            <span className="font-mono text-[11px] animate-pulse">
+              {message.loadingStage || 'Analyzing surveillance data & multi-physics twin...'}
+            </span>
           </div>
         )}
 
@@ -74,6 +79,25 @@ export const AiMessage: React.FC<AiMessageProps> = ({ message, onActionExecuted 
           <div className={`text-xs ${isUser ? 'text-white' : 'text-ink-secondary'}`}>
             {renderFormattedText(message.content)}
           </div>
+        )}
+
+        {/* Voice Audio Playback (Sarvam Bulbul / Web Speech) */}
+        {!isUser && !message.isLoading && message.content && (
+          <AudioPlayer
+            audioBase64={message.audioBase64 || message.response?.audioBase64}
+            textToSpeak={message.content}
+            autoPlay={message.isVoice}
+          />
+        )}
+
+        {/* Data Sufficiency Notice (Hallucination Prevention) */}
+        {!isUser && message.response?.dataSufficiency && (
+          <DataSufficiencyNotice dataSufficiency={message.response.dataSufficiency} />
+        )}
+
+        {/* Multi-Well Comparison Table */}
+        {!isUser && message.response?.comparison && message.response.comparison.length > 0 && (
+          <ComparisonTable comparison={message.response.comparison} />
         )}
 
         {/* Error Notification */}

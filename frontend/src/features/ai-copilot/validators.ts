@@ -96,6 +96,38 @@ export function validateAiResponse(raw: any, fallbackWellId = 'well-bw-017'): Ai
     }
   }
 
+  const comparison: any[] = [];
+  if (Array.isArray(raw.comparison)) {
+    for (const c of raw.comparison) {
+      if (c && typeof c === 'object' && c.wellCode) {
+        comparison.push({
+          wellId: String(c.wellId || c.wellCode),
+          wellCode: String(c.wellCode),
+          oilRateBopd: Number(c.oilRateBopd) || 0,
+          waterCutPct: Number(c.waterCutPct) || 0,
+          bhtC: Number(c.bhtC) || 0,
+          fillagePct: Number(c.fillagePct) || 0,
+          healthScore: Number(c.healthScore) || 0,
+          dominantConcern: c.dominantConcern ? String(c.dominantConcern) : undefined,
+          status: String(c.status || 'Active'),
+        });
+      }
+    }
+  }
+
+  let dataSufficiency: any = undefined;
+  if (raw.dataSufficiency && typeof raw.dataSufficiency === 'object') {
+    dataSufficiency = {
+      isSufficient: Boolean(raw.dataSufficiency.isSufficient),
+      availableMetrics: Array.isArray(raw.dataSufficiency.availableMetrics)
+        ? raw.dataSufficiency.availableMetrics.map(String)
+        : [],
+      missingMetrics: Array.isArray(raw.dataSufficiency.missingMetrics)
+        ? raw.dataSufficiency.missingMetrics.map(String)
+        : [],
+    };
+  }
+
   return {
     answer: answer || 'Data processed successfully.',
     intent,
@@ -103,5 +135,7 @@ export function validateAiResponse(raw: any, fallbackWellId = 'well-bw-017'): Ai
     evidence: evidence.length > 0 ? evidence : undefined,
     actions: actions.length > 0 ? actions : undefined,
     warnings: warnings.length > 0 ? warnings : undefined,
+    comparison: comparison.length > 0 ? comparison : undefined,
+    dataSufficiency,
   };
 }

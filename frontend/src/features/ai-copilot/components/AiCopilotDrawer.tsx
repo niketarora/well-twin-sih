@@ -45,8 +45,8 @@ export const AiCopilotDrawer: React.FC = () => {
 
   const currentWellCode = (selectedWellId || 'well-bw-017').replace('well-', '').toUpperCase();
 
-  const handleSend = (text: string) => {
-    askQuestion(text, uiContext);
+  const handleSend = (text: string, isVoice: boolean = false) => {
+    askQuestion(text, uiContext, isVoice);
   };
 
   return (

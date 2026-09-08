@@ -1,6 +1,7 @@
 import React from 'react';
-import { X, ArrowRight, AlertTriangle, Flame, Activity, Droplets, Thermometer, Gauge } from 'lucide-react';
+import { X, ArrowRight, AlertTriangle, Flame, Activity, Droplets, Thermometer, Gauge, Sparkles } from 'lucide-react';
 import { FieldWell } from '../../types/field';
+import { useAiCopilot } from '../../features/ai-copilot/hooks/useAiCopilot';
 
 interface WellPopupProps {
   well: FieldWell;
@@ -9,6 +10,8 @@ interface WellPopupProps {
 }
 
 export const WellPopup: React.FC<WellPopupProps> = ({ well, onClose, onOpenWell }) => {
+  const { openWithPrompt } = useAiCopilot();
+
   const getStatusBadge = () => {
     switch (well.status) {
       case 'Optimal':
@@ -27,7 +30,7 @@ export const WellPopup: React.FC<WellPopupProps> = ({ well, onClose, onOpenWell 
   };
 
   return (
-    <div className="w-72 bg-surface/95 backdrop-blur-md border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="w-[300px] bg-surface/95 dark:bg-surface/90 backdrop-blur-md border border-border rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       {/* Header */}
       <div className="p-3 bg-surface-secondary/70 border-b border-border flex items-start justify-between">
         <div>
@@ -45,6 +48,7 @@ export const WellPopup: React.FC<WellPopupProps> = ({ well, onClose, onOpenWell 
           type="button"
           onClick={onClose}
           className="p-1 rounded-md text-ink-muted hover:text-ink hover:bg-border/60 transition-colors"
+          title="Close Popup"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -131,13 +135,27 @@ export const WellPopup: React.FC<WellPopupProps> = ({ well, onClose, onOpenWell 
       </div>
 
       {/* Footer Action */}
-      <div className="p-2.5 bg-surface-secondary/70 border-t border-border">
+      <div className="p-2.5 bg-surface-secondary/70 border-t border-border flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() =>
+            openWithPrompt(
+              `Analyze current surveillance status and multi-physics health for well ${well.code} (${well.pad}). What is the root cause across the 4 twins and what immediate mitigation is recommended?`
+            )
+          }
+          className="h-8 px-2.5 rounded-lg bg-surface border border-petroleum/30 text-petroleum hover:bg-petroleum/10 dark:text-cyan-400 dark:border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs shrink-0"
+          title="Investigate with AI Copilot"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-petroleum dark:text-cyan-400" />
+          <span>AI Triage</span>
+        </button>
+
         <button
           type="button"
           onClick={() => onOpenWell(well)}
-          className="w-full h-8 px-3 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+          className="flex-1 h-8 px-3 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
         >
-          <span>Open Well Overview</span>
+          <span>Open Overview</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
