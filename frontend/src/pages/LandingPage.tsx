@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Shield,
@@ -27,6 +27,11 @@ export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'thermal' | 'srp' | 'twin' | 'ai'>('thermal');
   const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
+
+  useEffect(() => {
+    // Ensure clean light theme is active for the landing page
+    document.documentElement.classList.remove('dark');
+  }, []);
 
   const marqueeLogos = [
     { src: m1, alt: 'myGov' },
@@ -107,6 +112,9 @@ export const LandingPage: React.FC = () => {
     <div className={`min-h-screen bg-[#F4F6F8] text-[#17212B] font-sans selection:bg-amber-500/20 ${
       fontSize === 'large' ? 'text-base' : 'text-sm'
     }`}>
+      {/* 0. Indian Flag Tricolor Top Accent Line */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-[#FF9933] via-white to-[#138808]" />
+
       {/* 1. Official Indian Government Top Bar (Rich Emerald Header) */}
       <div className="bg-[#047857] text-white text-xs px-4 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-3">
