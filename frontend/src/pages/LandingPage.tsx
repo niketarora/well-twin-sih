@@ -193,17 +193,6 @@ export const LandingPage: React.FC = () => {
           <button onClick={() => scrollToSection('marquee')} className="hover:text-[#C69A45] transition-colors font-bold">Govt Initiatives</button>
         </nav>
 
-        <div className="flex items-center gap-3">
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.96 }}
-            onClick={() => navigate('/overview')}
-            className="px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-[#C69A45] to-[#8A6A22] hover:from-[#B58B3A] hover:to-[#8A6A22] text-white font-extrabold text-xs shadow-md shadow-amber-600/20 flex items-center gap-2 transition-all"
-          >
-            <span>Enter Workstation</span>
-            <ArrowRight className="w-4 h-4" />
-          </motion.button>
-        </div>
       </header>
 
       {/* 3. Light Hero Section */}
