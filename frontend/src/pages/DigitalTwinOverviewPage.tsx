@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Cpu, Scale, Terminal, Layers } from 'lucide-react';
+import { Cpu, Scale, Terminal, Layers, Sliders, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { CouplingDiagram } from '../components/charts/CouplingDiagram';
@@ -81,16 +81,28 @@ export const DigitalTwinOverviewPage: React.FC = () => {
           badge="4 Coupled Models Active"
           badgeType="amber"
           actions={
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              type="button"
-              onClick={() => navigate('/model-comparison')}
-              className="h-8 px-3 rounded-lg bg-surface border border-border hover:bg-surface-secondary text-ink text-xs font-bold flex items-center gap-1.5 transition-colors shadow-subtle"
-            >
-              <Scale className="w-3.5 h-3.5 text-petroleum" />
-              <span>Open Validation Matrix</span>
-            </motion.button>
+            <div className="flex items-center gap-2">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                type="button"
+                onClick={() => navigate('/what-if-simulator')}
+                className="h-8 px-3.5 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm"
+              >
+                <Sliders className="w-3.5 h-3.5" />
+                <span>Run What-If Simulation</span>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                type="button"
+                onClick={() => navigate('/model-comparison')}
+                className="h-8 px-3 rounded-lg bg-surface border border-border hover:bg-surface-secondary text-ink text-xs font-bold flex items-center gap-1.5 transition-colors shadow-subtle"
+              >
+                <Scale className="w-3.5 h-3.5 text-petroleum" />
+                <span>Open Validation Matrix</span>
+              </motion.button>
+            </div>
           }
         />
       </motion.div>

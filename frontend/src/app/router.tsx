@@ -20,6 +20,7 @@ import { WellDiagramPage } from '../pages/WellDiagramPage';
 import { ModelComparisonPage } from '../pages/ModelComparisonPage';
 import { RecommendationsPage } from '../pages/RecommendationsPage';
 import { WorkOrdersPage } from '../pages/WorkOrdersPage';
+import { WhatIfSimulatorPage } from '../pages/WhatIfSimulatorPage';
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
       {
         path: 'well/:wellId/digital-twin',
         element: <DigitalTwinOverviewPage />,
+      },
+      {
+        path: 'well/:wellId/what-if-simulator',
+        element: <WhatIfSimulatorPage />,
       },
       {
         path: 'well/:wellId/well-state',
@@ -117,6 +122,10 @@ export const router = createBrowserRouter([
       {
         path: 'digital-twin',
         element: <DigitalTwinOverviewPage />,
+      },
+      {
+        path: 'what-if-simulator',
+        element: <WhatIfSimulatorPage />,
       },
       {
         path: 'well-state',

@@ -8,4 +8,6 @@ export * from './equipmentService';
 export * from './recommendationService';
 export * from './workOrderService';
 export * from './fieldService';
+export * from './srpApi';
+export * from './cssApi';
 export * from './export/operationalLogPdf';

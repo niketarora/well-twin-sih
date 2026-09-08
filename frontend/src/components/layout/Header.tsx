@@ -86,22 +86,6 @@ export const Header: React.FC = () => {
             </span>
           </div>
         </div>
-
-        {/* Telemetry Pills (Visible on 2xl screens only, prevent clipping) */}
-        <div className="hidden 2xl:flex items-center gap-2 font-mono text-xs shrink-0">
-          <div className="px-2 py-0.5 rounded bg-surface-secondary/70 border border-border/50 text-[11px]" title="Bottomhole Pressure">
-            <span className="text-[8.5px] text-ink-muted font-sans font-bold uppercase block leading-none">BHP</span>
-            <span className="font-bold text-ink">{activeWell.bhp} <span className="text-[9px] text-ink-muted font-normal">bar</span></span>
-          </div>
-          <div className="px-2 py-0.5 rounded bg-surface-secondary/70 border border-border/50 text-[11px]" title="Bottomhole Temperature">
-            <span className="text-[8.5px] text-ink-muted font-sans font-bold uppercase block leading-none">BHT</span>
-            <span className="font-bold text-status-warn">{activeWell.bht} <span className="text-[9px] text-ink-muted font-normal">°C</span></span>
-          </div>
-          <div className="px-2 py-0.5 rounded bg-surface-secondary/70 border border-border/50 text-[11px]" title="Net Oil Rate">
-            <span className="text-[8.5px] text-ink-muted font-sans font-bold uppercase block leading-none">Oil Rate</span>
-            <span className="font-bold text-ink">{activeWell.oilRateBopd} <span className="text-[9px] text-ink-muted font-normal">BOPD</span></span>
-          </div>
-        </div>
       </div>
 
       {/* Right side controls: SOS, Govt Portal, AI Copilot, Theme toggle, User profile */}

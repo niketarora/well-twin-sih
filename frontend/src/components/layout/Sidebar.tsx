@@ -18,6 +18,7 @@ import {
   ChevronDown,
   ChevronRight,
   Sliders,
+  SlidersHorizontal,
   Scale,
   PanelLeftClose,
   PanelLeftOpen,
@@ -75,6 +76,7 @@ export const Sidebar: React.FC = () => {
       label: 'DIGITAL TWIN',
       items: [
         { id: 'digital-twin', label: 'Twin Overview', path: '/digital-twin', icon: Cpu, accent: true },
+        { id: 'what-if-simulator', label: 'What-If Simulator', path: '/what-if-simulator', icon: SlidersHorizontal, accent: true },
         { id: 'reservoir', label: 'Reservoir / Thermal', path: '/reservoir', icon: Flame },
         { id: 'wellbore', label: 'Wellbore Hydrodynamics', path: '/wellbore', icon: Layers },
         { id: 'srp-pump', label: 'SRP Lift Dynamics', path: '/srp-pump', icon: Activity },

@@ -27,8 +27,6 @@ export const WellFilters: React.FC<WellFiltersProps> = ({
     producing: wells.filter(w => w.status === 'Optimal').length,
     attention: wells.filter(w => w.status === 'Attention Required').length,
     critical: wells.filter(w => w.status === 'Critical').length,
-    css: wells.filter(w => w.status === 'CSS-Active').length,
-    shutin: wells.filter(w => w.status === 'Shut-In').length,
   };
 
   const statusOptions: { id: WellStatusFilter; label: string; count: number; color?: string }[] = [
@@ -36,8 +34,6 @@ export const WellFilters: React.FC<WellFiltersProps> = ({
     { id: 'producing', label: 'Producing', count: counts.producing, color: 'text-emerald-700 dark:text-emerald-400' },
     { id: 'attention', label: 'Attention', count: counts.attention, color: 'text-amber-700 dark:text-amber-400' },
     { id: 'critical', label: 'Critical', count: counts.critical, color: 'text-red-700 dark:text-red-400' },
-    { id: 'css', label: 'CSS Active', count: counts.css, color: 'text-sky-700 dark:text-sky-400' },
-    { id: 'shutin', label: 'Shut-In', count: counts.shutin, color: 'text-ink-muted' },
   ];
 
   const layerOptions: { id: MapLayerType; label: string }[] = [

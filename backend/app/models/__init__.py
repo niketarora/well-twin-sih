@@ -13,6 +13,8 @@ from .work_order import WorkOrder
 from .incident import Incident
 from .contact import Contact
 from .notification_log import NotificationLog
+from .srp_prediction import SrpPrediction
+from .css_prediction import CssPrediction
 
 __all__ = [
     "Base",
@@ -31,4 +33,6 @@ __all__ = [
     "Incident",
     "Contact",
     "NotificationLog",
+    "SrpPrediction",
+    "CssPrediction",
 ]
