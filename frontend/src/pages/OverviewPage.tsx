@@ -8,8 +8,6 @@ import { KpiCard } from '../components/ui/KpiCard';
 import { Sparkline } from '../components/ui/Sparkline';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { ErrorState } from '../components/ui/ErrorState';
-import { CauseChain } from '../components/ui/CauseChain';
-import { ModelHealthDrift } from '../components/ui/ModelHealthDrift';
 import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { wellService, telemetryService, alertService, generateOperationalLogPdf } from '../services';
 import { Well, WellHealth, KpiCardData, Alert } from '../types';
@@ -246,26 +244,16 @@ export const OverviewPage: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Engineering Cause-and-Effect Propagation Chain */}
-      <motion.div variants={itemVariants}>
-        <CauseChain />
-      </motion.div>
-
       {/* Well Health & Subsystem Health Strip */}
       <motion.div variants={itemVariants}>
         <HealthScore health={health} />
       </motion.div>
 
-      {/* Key Engineering KPIs with Provenance Badges */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        {kpis.map((kpi) => (
+      {/* Key Engineering KPIs with Provenance Badges (Clean 4-column layout) */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        {kpis.slice(0, 4).map((kpi) => (
           <KpiCard key={kpi.id} kpi={kpi} />
         ))}
-      </motion.div>
-
-      {/* Model Health & Drift Panel */}
-      <motion.div variants={itemVariants}>
-        <ModelHealthDrift />
       </motion.div>
 
       {/* Two Columns: Predicted vs Actual Production Chart & Top Alert Triage */}
