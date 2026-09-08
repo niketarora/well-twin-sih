@@ -114,7 +114,7 @@ export const EmergencySosControl: React.FC = () => {
         title="Report an emergency (Manual SOS)"
         aria-label="Report an emergency"
       >
-        <span className="absolute -inset-0.5 rounded-lg bg-status-crit opacity-50 blur-xs group-hover:opacity-80 animate-pulse" />
+        <span className="absolute inset-0 rounded-lg bg-status-crit/20 animate-pulse pointer-events-none" />
         <Siren className="w-4 h-4 shrink-0 relative z-10 animate-bounce-slow" />
         <span className="hidden sm:inline relative z-10">SOS</span>
       </motion.button>

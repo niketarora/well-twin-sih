@@ -42,7 +42,7 @@ export const Header: React.FC = () => {
   return (
     <header className="bg-surface/95 backdrop-blur-md border-b border-border px-3 sm:px-5 sticky top-0 z-30 flex items-center justify-between h-[60px] shadow-subtle select-none">
       {/* Left side: Navigation toggle, Field identity, Well ID, Operating state */}
-      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0">
+      <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 overflow-hidden">
         {/* Mobile menu toggle */}
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -76,18 +76,18 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Persistent Operating State */}
-        <div className="hidden lg:flex items-center gap-3 px-2 border-r border-border shrink-0">
-          <div className="flex flex-col leading-tight">
+        <div className="hidden xl:flex items-center gap-3 px-2 border-r border-border shrink-0 max-w-[210px] overflow-hidden">
+          <div className="flex flex-col leading-tight overflow-hidden">
             <span className="text-[8.5px] uppercase font-black tracking-wider text-ink-muted">
               Operating State
             </span>
-            <span className="text-xs font-semibold text-ink mt-0.5">
+            <span className="text-xs font-semibold text-ink mt-0.5 truncate">
               {activeWell.phase} · <span className="font-mono text-petroleum font-bold">CSS {activeWell.cycle}</span> · Day {activeWell.dayInCycle}/90
             </span>
           </div>
         </div>
 
-        {/* Telemetry Pills (Visible on large screens, prevent clipping) */}
+        {/* Telemetry Pills (Visible on 2xl screens only, prevent clipping) */}
         <div className="hidden 2xl:flex items-center gap-2 font-mono text-xs shrink-0">
           <div className="px-2 py-0.5 rounded bg-surface-secondary/70 border border-border/50 text-[11px]" title="Bottomhole Pressure">
             <span className="text-[8.5px] text-ink-muted font-sans font-bold uppercase block leading-none">BHP</span>
@@ -105,7 +105,7 @@ export const Header: React.FC = () => {
       </div>
 
       {/* Right side controls: SOS, Govt Portal, AI Copilot, Theme toggle, User profile */}
-      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 pl-2">
         {/* Emergency Manual SOS */}
         <div className="shrink-0 relative">
           <EmergencySosControl />
