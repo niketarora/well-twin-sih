@@ -215,13 +215,24 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        <nav className="hidden md:flex items-center gap-7 text-xs font-bold text-[#66717C]">
-          <button onClick={() => scrollToSection('overview')} className="hover:text-[#C69A45] transition-colors font-bold">Overview</button>
-          <button onClick={() => scrollToSection('pillars')} className="hover:text-[#C69A45] transition-colors font-bold">Solution Pillars</button>
-          <button onClick={() => scrollToSection('problem-context')} className="hover:text-[#C69A45] transition-colors font-bold">Field Specifications</button>
-          <button onClick={() => scrollToSection('marquee')} className="hover:text-[#C69A45] transition-colors font-bold">Govt Initiatives</button>
-        </nav>
-
+        <div className="flex items-center gap-4">
+          <nav className="hidden md:flex items-center gap-6 text-xs font-bold text-[#66717C]">
+            <button onClick={() => scrollToSection('overview')} className="hover:text-[#C69A45] transition-colors font-bold cursor-pointer">Overview</button>
+            <button onClick={() => scrollToSection('pillars')} className="hover:text-[#C69A45] transition-colors font-bold cursor-pointer">Solution Pillars</button>
+            <button onClick={() => scrollToSection('problem-context')} className="hover:text-[#C69A45] transition-colors font-bold cursor-pointer">Field Specifications</button>
+            <button onClick={() => scrollToSection('marquee')} className="hover:text-[#C69A45] transition-colors font-bold cursor-pointer">Govt Initiatives</button>
+          </nav>
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={() => navigate('/field-map')}
+            className="px-3.5 py-1.5 rounded-xl bg-[#C69A45] hover:bg-[#B58B3A] text-white font-extrabold text-xs shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
+            title="Open Oil Field Map Workspace"
+          >
+            <span>Open Workspace</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </motion.button>
+        </div>
       </header>
 
       {/* 3. Light Hero Section */}
@@ -264,10 +275,10 @@ export const LandingPage: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => navigate('/overview')}
-                className="px-6 py-3.5 rounded-xl bg-[#C69A45] hover:bg-[#B58B3A] text-white font-black text-xs sm:text-sm shadow-lg shadow-amber-600/20 flex items-center gap-2"
+                onClick={() => navigate('/field-map')}
+                className="px-6 py-3.5 rounded-xl bg-[#C69A45] hover:bg-[#B58B3A] text-white font-black text-xs sm:text-sm shadow-lg shadow-amber-600/20 flex items-center gap-2 cursor-pointer"
               >
-                <span>Launch Workstation Command Center</span>
+                <span>Open Field Map Workspace</span>
                 <ArrowRight className="w-4 h-4" />
               </motion.button>
 
@@ -474,10 +485,10 @@ export const LandingPage: React.FC = () => {
         <motion.button
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
-          onClick={() => navigate('/overview')}
-          className="px-8 py-3.5 rounded-xl bg-[#C69A45] hover:bg-[#B58B3A] text-white font-extrabold text-sm shadow-lg shadow-amber-600/20 inline-flex items-center gap-2 transition-all"
+          onClick={() => navigate('/field-map')}
+          className="px-8 py-3.5 rounded-xl bg-[#C69A45] hover:bg-[#B58B3A] text-white font-extrabold text-sm shadow-lg shadow-amber-600/20 inline-flex items-center gap-2 transition-all cursor-pointer"
         >
-          <span>Launch Workstation Now</span>
+          <span>Open Field Map Workspace</span>
           <ArrowRight className="w-4 h-4 text-white" />
         </motion.button>
       </section>
@@ -518,10 +529,10 @@ export const LandingPage: React.FC = () => {
             <span className="font-semibold">© 2026 Oil India Limited · Ministry of Petroleum & Natural Gas · Govt of India</span>
           </div>
           <button
-            onClick={() => navigate('/overview')}
-            className="text-[#C69A45] font-black hover:underline"
+            onClick={() => navigate('/field-map')}
+            className="text-[#C69A45] font-black hover:underline cursor-pointer"
           >
-            Launch Live Workstation →
+            Open Live Workstation (Field Map) →
           </button>
         </div>
       </footer>
