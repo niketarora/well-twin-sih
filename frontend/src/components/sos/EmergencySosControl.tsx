@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   Siren,
   Flame,
@@ -104,16 +105,19 @@ export const EmergencySosControl: React.FC = () => {
   return (
     <>
       {/* Always-visible emergency trigger - accessible from every page via the Header */}
-      <button
+      <motion.button
+        whileHover={{ scale: 1.06 }}
+        whileTap={{ scale: 0.94 }}
         type="button"
         onClick={handleOpen}
-        className="flex items-center gap-1.5 h-8 px-2.5 sm:px-3 rounded-lg bg-status-crit hover:bg-status-crit-deep text-white text-xs font-bold tracking-wide shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-status-crit/50"
+        className="relative group flex items-center gap-1.5 h-8 px-3 rounded-lg bg-status-crit hover:bg-status-crit-deep text-white text-xs font-bold tracking-wide shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-status-crit/50"
         title="Report an emergency (Manual SOS)"
         aria-label="Report an emergency"
       >
-        <Siren className="w-4 h-4 shrink-0" />
-        <span className="hidden sm:inline">SOS</span>
-      </button>
+        <span className="absolute inset-0 rounded-lg bg-status-crit/20 animate-pulse pointer-events-none" />
+        <Siren className="w-4 h-4 shrink-0 relative z-10 animate-bounce-slow" />
+        <span className="hidden sm:inline relative z-10">SOS</span>
+      </motion.button>
 
       <Modal
         isOpen={isOpen}
