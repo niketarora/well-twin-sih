@@ -110,7 +110,7 @@ export const EmergencySosControl: React.FC = () => {
         whileTap={{ scale: 0.94 }}
         type="button"
         onClick={handleOpen}
-        className="relative group flex items-center gap-1.5 h-8 px-3 rounded-lg bg-status-crit hover:bg-status-crit-deep text-white text-xs font-bold tracking-wide shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-status-crit/50"
+        className="relative group flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg bg-status-crit hover:bg-status-crit-deep text-white text-xs font-bold tracking-wide shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-status-crit/50"
         title="Report an emergency (Manual SOS)"
         aria-label="Report an emergency"
       >
