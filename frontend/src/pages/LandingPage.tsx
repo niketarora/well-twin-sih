@@ -298,7 +298,31 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. INFINITE MARQUEE LOGO BANNER (Using m1, m2, m7, m8, m9 provided by user) */}
+      {/* 7. Call to Action Banner (Light Scheme Matching Workstation) */}
+      <section className="py-14 px-4 lg:px-8 bg-white border-y border-[#E2E6EA] text-center space-y-5">
+        <div className="max-w-3xl mx-auto space-y-3">
+          <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-50 border border-amber-200 text-[#C69A45] inline-block">
+            Production & Technical Workstation
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#17212B] tracking-tight">
+            Ready to Explore the Baghewala Well Twin Workstation?
+          </h2>
+          <p className="text-[#66717C] font-medium text-xs sm:text-sm max-w-xl mx-auto">
+            Access live 7-well surveillance maps, interactive dynamometer cards, steam injection cycle trackers, and AI prescriptive recommendations.
+          </p>
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+          onClick={() => navigate('/overview')}
+          className="px-8 py-3.5 rounded-xl bg-[#C69A45] hover:bg-[#B58B3A] text-white font-extrabold text-sm shadow-lg shadow-amber-600/20 inline-flex items-center gap-2 transition-all"
+        >
+          <span>Launch Workstation Now</span>
+          <ArrowRight className="w-4 h-4 text-white" />
+        </motion.button>
+      </section>
+
+      {/* 8. INFINITE MARQUEE LOGO BANNER (Placed at the very bottom before footer) */}
       <section id="marquee" className="py-7 bg-white border-b border-[#E2E6EA] overflow-hidden select-none">
         <div className="max-w-6xl mx-auto px-4 mb-3 text-center">
           <span className="text-[11px] font-black text-[#8B949E] uppercase tracking-widest block">
@@ -326,160 +350,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. Solution Pillars Interactive Section */}
-      <section id="pillars" className="py-16 px-4 lg:px-8 max-w-6xl mx-auto space-y-10">
-        <div className="text-center space-y-3">
-          <span className="text-[#C69A45] text-xs font-mono font-black tracking-widest uppercase">
-            Multi-Physics Engineering Architecture
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#17212B]">
-            Four Core Pillars of the Digital Twin Solution
-          </h2>
-          <p className="text-[#66717C] text-xs sm:text-sm max-w-2xl mx-auto">
-            Addressing CSS steam cycle optimization, sucker rod pump mechanical reliability, and multi-physics AI prediction.
-          </p>
-        </div>
-
-        {/* Pillar Tabs */}
-        <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-white border border-[#E2E6EA] max-w-2xl mx-auto shadow-2xs">
-          {solutionPillars.map((pillar) => {
-            const Icon = pillar.icon;
-            const isSelected = activeTab === pillar.id;
-            return (
-              <button
-                key={pillar.id}
-                onClick={() => setActiveTab(pillar.id as any)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                  isSelected
-                    ? 'bg-[#C69A45] text-white shadow-md font-black'
-                    : 'text-[#66717C] hover:text-[#17212B] hover:bg-[#F8F9FA]'
-                }`}
-              >
-                <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-[#C69A45]'}`} />
-                <span>{pillar.title.split(' ')[0]} {pillar.title.split(' ')[1]}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Selected Pillar Content Card */}
-        <AnimatePresence mode="wait">
-          {solutionPillars
-            .filter((p) => p.id === activeTab)
-            .map((pillar) => {
-              const Icon = pillar.icon;
-              return (
-                <motion.div
-                  key={pillar.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className={`p-6 sm:p-8 rounded-2xl border bg-white ${pillar.borderColor} shadow-card grid grid-cols-1 md:grid-cols-12 gap-8 items-center`}
-                >
-                  <div className="md:col-span-8 space-y-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${pillar.badgeColor}`}>
-                      {pillar.subtitle}
-                    </span>
-
-                    <h3 className="text-xl sm:text-2xl font-black text-[#17212B]">
-                      {pillar.title}
-                    </h3>
-
-                    <p className="text-[#66717C] text-sm leading-relaxed font-medium">
-                      {pillar.desc}
-                    </p>
-
-                    <div className="space-y-2 pt-2">
-                      {pillar.highlights.map((item, idx) => (
-                        <div key={idx} className="flex items-start gap-2.5 text-xs font-bold text-[#17212B]">
-                          <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="md:col-span-4 flex justify-center">
-                    <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-[#F8F9FA] border border-[#E2E6EA] shadow-card flex items-center justify-center text-[#C69A45]">
-                      <Icon className="w-12 h-12 sm:w-16 sm:h-16" />
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-        </AnimatePresence>
-      </section>
-
-      {/* 6. SIH Problem Statement Details */}
-      <section id="problem-context" className="py-16 px-4 lg:px-8 max-w-6xl mx-auto space-y-8 border-t border-[#E2E6EA]">
-        <div className="text-center space-y-3">
-          <span className="text-emerald-700 text-xs font-mono font-bold tracking-widest uppercase">
-            SIH26120 Specifications
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#17212B]">
-            Baghewala Field Operational Context & Objectives
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-white border border-[#E2E6EA] shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 font-black">
-              1
-            </div>
-            <h3 className="font-bold text-base text-[#17212B]">Heavy Oil Recovery</h3>
-            <p className="text-xs text-[#66717C] leading-relaxed font-medium">
-              Jodhpur Sandstone produces heavy crude (17–19° API) under low reservoir temperature (46–48°C), requiring Cyclic Steam Stimulation (CSS) to mobilize fluids.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white border border-[#E2E6EA] shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700 font-black">
-              2
-            </div>
-            <h3 className="font-bold text-base text-[#17212B]">Rod Floating Prevention</h3>
-            <p className="text-xs text-[#66717C] leading-relaxed font-medium">
-              As steam chamber cools, crude viscosity surges—causing downstroke rod drag, rod floating, Traveling Valve impact, and frequent mechanical failures.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-white border border-[#E2E6EA] shadow-xs space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 font-black">
-              3
-            </div>
-            <h3 className="font-bold text-base text-[#17212B]">Predictive SOR Optimization</h3>
-            <p className="text-xs text-[#66717C] leading-relaxed font-medium">
-              Continuous multi-physics coupling minimizes Steam-Oil Ratio (SOR) and VFD energy consumption while maximizing total cumulative oil output.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 7. Call to Action Banner (Light Scheme Matching Workstation) */}
-      <section className="py-14 px-4 lg:px-8 bg-white border-y border-[#E2E6EA] text-center space-y-5">
-        <div className="max-w-3xl mx-auto space-y-3">
-          <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-50 border border-amber-200 text-[#C69A45] inline-block">
-            Production & Technical Workstation
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#17212B] tracking-tight">
-            Ready to Explore the Baghewala Well Twin Workstation?
-          </h2>
-          <p className="text-[#66717C] font-medium text-xs sm:text-sm max-w-xl mx-auto">
-            Access live 7-well surveillance maps, interactive dynamometer cards, steam injection cycle trackers, and AI prescriptive recommendations.
-          </p>
-        </div>
-        <motion.button
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          onClick={() => navigate('/overview')}
-          className="px-8 py-3.5 rounded-xl bg-[#C69A45] hover:bg-[#B58B3A] text-white font-extrabold text-sm shadow-lg shadow-amber-600/20 inline-flex items-center gap-2 transition-all"
-        >
-          <span>Launch Workstation Now</span>
-          <ArrowRight className="w-4 h-4 text-white" />
-        </motion.button>
-      </section>
-
-      {/* 8. Official Government Footer */}
+      {/* 9. Official Government Footer */}
       <footer className="bg-white border-t border-[#E2E6EA] py-8 px-4 lg:px-8 space-y-4 text-xs text-[#66717C]">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
