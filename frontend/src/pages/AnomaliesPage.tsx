@@ -5,6 +5,7 @@ import { SectionHeader } from '../components/ui/SectionHeader';
 import { SeverityBadge } from '../components/ui/SeverityBadge';
 import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { mockAnomalies } from '../mock/anomalies';
+import { SrpAnomaliesSection } from '../components/srp/SrpAnomaliesSection';
 
 export const AnomaliesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -158,6 +159,9 @@ export const AnomaliesPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Field-Wide SRP Autoencoder Surveillance Matrix & BW-017 Trend Logs */}
+      <SrpAnomaliesSection />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Menu, Sun, Moon, Wifi, Activity, Bot } from 'lucide-react';
+import { Menu, Sun, Moon, Bot } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { mockWell, mockFieldWells } from '../../mock';
 import { EmergencySosControl } from '../sos/EmergencySosControl';
@@ -69,44 +69,13 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Persistent Well Operational Context Strip (Engineering Workstation) */}
-        <div className="hidden lg:flex items-center gap-4 px-3 border-r border-border shrink-0">
+        <div className="hidden md:flex items-center px-3 border-r border-border shrink-0">
           <div className="flex flex-col leading-tight">
             <span className="text-[9.5px] uppercase font-semibold tracking-wider text-ink-muted">
               Operating State
             </span>
             <span className="text-xs font-medium text-ink mt-0.5">
               {activeWell.phase} · <span className="font-mono text-petroleum font-semibold">CSS {activeWell.cycle}</span> · Day {activeWell.dayInCycle}/90
-            </span>
-          </div>
-
-          <div className="h-6 w-px bg-border-subtle" />
-
-          {/* Real-time Subsurface / Surface Key Telemetry Context */}
-          <div className="flex items-center gap-3 font-mono text-xs">
-            <div title="Bottomhole Flowing Pressure (Estimated/Observed)">
-              <span className="text-[9.5px] text-ink-muted font-sans uppercase block leading-none">BHP</span>
-              <span className="font-bold text-ink leading-tight">{activeWell.bhp} <span className="text-[10px] text-ink-muted font-normal">bar</span></span>
-            </div>
-            <div title="Bottomhole Temperature (Observed Downhole Sensor)">
-              <span className="text-[9.5px] text-ink-muted font-sans uppercase block leading-none">BHT</span>
-              <span className="font-bold text-status-warn leading-tight">{activeWell.bht} <span className="text-[10px] text-ink-muted font-normal">°C</span></span>
-            </div>
-            <div title="Current Net Oil Production Rate (Actual Coriolis)">
-              <span className="text-[9.5px] text-ink-muted font-sans uppercase block leading-none">Oil Rate</span>
-              <span className="font-bold text-ink leading-tight">{activeWell.oilRateBopd} <span className="text-[10px] text-ink-muted font-normal">BOPD</span></span>
-            </div>
-          </div>
-        </div>
-
-        {/* SCADA Status */}
-        <div className="hidden xl:flex items-center gap-2 px-3 border-r border-border shrink-0">
-          <span className="w-2 h-2 rounded-full bg-status-green animate-pulse" />
-          <div className="flex flex-col leading-tight">
-            <span className="text-[9.5px] uppercase font-semibold tracking-wider text-ink-muted">
-              Telemetry
-            </span>
-            <span className="font-mono text-[11px] font-medium text-ink">
-              SCADA 2.0s OK
             </span>
           </div>
         </div>

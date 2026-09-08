@@ -6,11 +6,22 @@ import { useAiCopilot } from '../../features/ai-copilot/hooks/useAiCopilot';
 
 interface DynamometerChartProps {
   className?: string;
+  selectedLoopKey?: 'current' | 'previous' | 'baseline';
+  onSelectLoopKey?: (loopKey: 'current' | 'previous' | 'baseline') => void;
 }
 
-export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = '' }) => {
+export const DynamometerChart: React.FC<DynamometerChartProps> = ({
+  className = '',
+  selectedLoopKey: propLoopKey,
+  onSelectLoopKey,
+}) => {
   const { openWithPrompt } = useAiCopilot();
-  const [selectedLoopKey, setSelectedLoopKey] = useState<'current' | 'previous' | 'baseline'>('current');
+  const [internalLoopKey, setInternalLoopKey] = useState<'current' | 'previous' | 'baseline'>('current');
+  const selectedLoopKey = propLoopKey !== undefined ? propLoopKey : internalLoopKey;
+  const handleSelectLoop = (key: 'current' | 'previous' | 'baseline') => {
+    setInternalLoopKey(key);
+    onSelectLoopKey?.(key);
+  };
   const [showSurface, setShowSurface] = useState(true);
   const [showDownhole, setShowDownhole] = useState(true);
 
@@ -133,7 +144,7 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
           <div className="inline-flex rounded-lg border border-border bg-surface-secondary p-0.5">
             <button
               type="button"
-              onClick={() => setSelectedLoopKey('current')}
+              onClick={() => handleSelectLoop('current')}
               className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
                 selectedLoopKey === 'current'
                   ? 'bg-surface text-ink shadow-sm font-semibold'
@@ -144,7 +155,7 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
             </button>
             <button
               type="button"
-              onClick={() => setSelectedLoopKey('previous')}
+              onClick={() => handleSelectLoop('previous')}
               className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
                 selectedLoopKey === 'previous'
                   ? 'bg-surface text-ink shadow-sm font-semibold'
@@ -155,7 +166,7 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
             </button>
             <button
               type="button"
-              onClick={() => setSelectedLoopKey('baseline')}
+              onClick={() => handleSelectLoop('baseline')}
               className={`px-2.5 py-1 rounded text-xs font-medium transition-all ${
                 selectedLoopKey === 'baseline'
                   ? 'bg-surface text-ink shadow-sm font-semibold'
