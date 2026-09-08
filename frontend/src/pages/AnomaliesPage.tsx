@@ -6,6 +6,7 @@ import { SeverityBadge } from '../components/ui/SeverityBadge';
 import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { mockAnomalies } from '../mock/anomalies';
 import { SrpAnomaliesSection } from '../components/srp/SrpAnomaliesSection';
+import { CssAnomaliesSection } from '../components/css/CssAnomaliesSection';
 
 export const AnomaliesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -159,6 +160,9 @@ export const AnomaliesPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Cyclic Steam Stimulation (CSS) ML Thermal Recovery & Cutoff Surveillance */}
+      <CssAnomaliesSection />
 
       {/* Field-Wide SRP Autoencoder Surveillance Matrix & BW-017 Trend Logs */}
       <SrpAnomaliesSection />

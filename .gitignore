@@ -59,4 +59,4 @@ frontend/.env
 *.sqlite*
 .pytest_cache/
 scratch/
-
+*.zip

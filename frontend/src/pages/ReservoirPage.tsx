@@ -5,22 +5,28 @@ import { SectionHeader } from '../components/ui/SectionHeader';
 import { SteamPlumeSvg } from '../components/charts/SteamPlumeSvg';
 import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
-import { digitalTwinService } from '../services';
-import { ReservoirTwinState } from '../types';
+import { digitalTwinService, cssCycleService } from '../services';
+import { ReservoirTwinState, CssCycleState } from '../types';
 import { mockViscosityVsTempCurve, mockReservoirThermalTrajectory } from '../mock/digitalTwin/reservoir';
+import { CssMlPredictionCard } from '../components/css/CssMlPredictionCard';
 
 export const ReservoirPage: React.FC = () => {
   const [twin, setTwin] = useState<ReservoirTwinState | null>(null);
+  const [cycle, setCycle] = useState<CssCycleState | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    digitalTwinService.getReservoirTwin().then((data) => {
-      setTwin(data);
+    Promise.all([
+      digitalTwinService.getReservoirTwin(),
+      cssCycleService.getCssCycle(),
+    ]).then(([resTwin, resCycle]) => {
+      setTwin(resTwin);
+      setCycle(resCycle);
       setLoading(false);
     });
   }, []);
 
-  if (loading || !twin) {
+  if (loading || !twin || !cycle) {
     return (
       <div className="space-y-6">
         <LoadingSkeleton type="card" />
@@ -36,6 +42,13 @@ export const ReservoirPage: React.FC = () => {
         subtitle="Nonlinear hydro-thermal energy transport, steam chamber growth, and temperature-dependent Andrade viscosity attenuation."
         badge="Cycle 4 · Soak Decay"
         badgeType="amber"
+      />
+
+      {/* Twin 1 Machine Learning Engine · CSS Field-Month Surrogate */}
+      <CssMlPredictionCard
+        cycle={cycle}
+        title="Twin 1 Machine Learning Engine · CSS Field-Month Thermal Surrogate"
+        subtitle="Physics-informed CatBoost surrogate forecasting next-month bitumen production and thermodynamic OSR cutoff"
       />
 
       {/* 3-Group Input & State Cards */}

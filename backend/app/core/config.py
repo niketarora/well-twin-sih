@@ -52,6 +52,10 @@ class Settings(BaseSettings):
     # "twilio": reserved for a later phase; not implemented yet.
     NOTIFICATION_MODE: str = "mock"
 
+    # External CSS ML CatBoost Model API configuration (deployed on Render)
+    CSS_MODEL_API_URL: str = "https://cssmodel.onrender.com"
+    CSS_MODEL_TIMEOUT_SECONDS: float = 60.0
+
     @property
     def async_database_url(self) -> str:
         if self.SUPABASE_DB_URL:

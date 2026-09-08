@@ -48,6 +48,12 @@ export const navigationRegistry: Record<string, NavigationTarget> = {
     pattern: '/well/:wellId/digital-twin',
     description: 'Coupled 4-domain digital twin architecture, subsystem scoring, and sync status',
   },
+  whatIfSimulator: {
+    id: 'whatIfSimulator',
+    name: 'What-If Simulator',
+    pattern: '/well/:wellId/what-if-simulator',
+    description: 'Interactive prototype Digital Twin simulation workbench for CSS and SRP operating scenarios',
+  },
   wellState: {
     id: 'wellState',
     name: 'Well State Analytics',
