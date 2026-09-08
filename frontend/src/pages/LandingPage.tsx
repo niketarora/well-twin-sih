@@ -37,6 +37,7 @@ export const LandingPage: React.FC = () => {
   };
 
   const marqueeLogos = [
+    { src: ministryEmblem, alt: 'Ministry of Petroleum & Natural Gas' },
     { src: m1, alt: 'myGov' },
     { src: m2, alt: 'india.gov.in' },
     { src: m7, alt: 'Make in India' },
@@ -121,25 +122,12 @@ export const LandingPage: React.FC = () => {
       {/* 1. Official Indian Government Top Bar (Rich Emerald Header) */}
       <div className="bg-[#047857] text-white text-xs px-4 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-white/95 p-1 rounded shadow-2xs">
-            <img
-              src={ministryEmblem}
-              alt="Ministry Emblem"
-              className="h-8 w-auto object-contain"
-            />
-            <div className="w-px h-6 bg-slate-300" />
-            <img
-              src={oilIndiaLogo}
-              alt="Oil India Limited Logo"
-              className="h-8 w-auto object-contain"
-            />
-          </div>
           <div className="flex flex-col leading-tight">
             <span className="font-extrabold text-xs tracking-wide text-white">
               भारत सरकार | Government of India
             </span>
             <span className="text-[11px] font-semibold text-emerald-100">
-              ऑयल इंडिया लिमिटेड · पेट्रोलियम एवं प्राकृतिक गैस मंत्रालय | Oil India Limited
+              ऑयल इंडिया लिमिटेड · पेट्रोलियम एवं प्राकृतिक गैस मंत्रालय | Ministry of Petroleum & Natural Gas
             </span>
           </div>
         </div>
