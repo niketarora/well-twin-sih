@@ -1,5 +1,7 @@
 import { apiFetch } from '../../../services/apiClient';
 import { AiAction, AiEvidence, AiIntent, AiResponse, AiUiContext, EvidenceProvenance } from '../types/ai';
+import { GeminiProvider } from './providers/GeminiProvider';
+import { buildAiContext } from './contextBuilder';
 
 interface NavigatorNavigationResponse {
   target: string;
@@ -31,9 +33,13 @@ export interface ProcessQueryOptions {
 }
 
 class AiOrchestrator {
+  private geminiProvider = new GeminiProvider();
+
   /**
    * Routes user questions directly to the unified Gemini + DB + Petroleum Engineer + Sarvam TTS pipeline.
    * Endpoint: POST /api/v1/ai/navigator
+   * If backend is offline or unreachable (e.g. static hosting on Vercel returning 405),
+   * seamlessly falls back to client-side Gemini / Petroleum Engineering engine.
    */
   async processQuery(
     prompt: string,
@@ -105,8 +111,17 @@ class AiOrchestrator {
         audioBase64: res.audio_base64,
       };
     } catch (err: any) {
-      console.error('[AiOrchestrator] Failed to execute live AI Navigator query:', err);
-      throw err;
+      console.warn(
+        `[AiOrchestrator] Backend /ai/navigator unavailable or failed (${err.message || err}). Falling back to Gemini / Petroleum Engineering engine.`
+      );
+      try {
+        const context = await buildAiContext(uiContext);
+        const fallbackResponse = await this.geminiProvider.generateResponse(prompt, context);
+        return fallbackResponse;
+      } catch (fallbackErr: any) {
+        console.error('[AiOrchestrator] Fallback engine failed:', fallbackErr);
+        throw fallbackErr;
+      }
     }
   }
 }

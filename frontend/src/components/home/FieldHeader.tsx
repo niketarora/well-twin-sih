@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, Activity, Flame, Droplets, AlertTriangle, CheckCircle2, ShieldAlert, PauseCircle, Clock } from 'lucide-react';
+import { Layers, Activity, Droplets, AlertTriangle, CheckCircle2, ShieldAlert, Clock } from 'lucide-react';
 import { FieldSummary } from '../../types/field';
 import { DataProvenanceBadge } from '../ui/DataProvenanceBadge';
 
@@ -47,7 +47,7 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({ summary, onRefresh, is
       </div>
 
       {/* Field Level KPI Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 pt-1">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-1">
         {/* Total Wells */}
         <div className="p-2.5 rounded-lg bg-surface-secondary/70 border border-border/80 flex flex-col">
           <span className="text-[10px] font-medium uppercase tracking-wider text-ink-muted">Total Wells</span>
@@ -90,30 +90,6 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({ summary, onRefresh, is
           <div className="mt-1 flex items-baseline gap-1.5">
             <span className="text-lg font-bold text-red-700 dark:text-red-400">{summary.criticalWells}</span>
             <span className="text-[10px] text-red-600/80 dark:text-red-400/80">urgent</span>
-          </div>
-        </div>
-
-        {/* CSS Active Wells */}
-        <div className="p-2.5 rounded-lg bg-sky-500/5 dark:bg-sky-500/10 border border-sky-500/20 flex flex-col">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-sky-700 dark:text-sky-400">CSS Active</span>
-            <Flame className="w-3 h-3 text-sky-600 dark:text-sky-400" />
-          </div>
-          <div className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-lg font-bold text-sky-700 dark:text-sky-400">{summary.cssActiveWells}</span>
-            <span className="text-[10px] text-sky-600/80 dark:text-sky-400/80">thermal</span>
-          </div>
-        </div>
-
-        {/* Shut-In Wells */}
-        <div className="p-2.5 rounded-lg bg-surface-secondary/70 border border-border/80 flex flex-col">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-ink-muted">Shut-In</span>
-            <PauseCircle className="w-3 h-3 text-ink-muted" />
-          </div>
-          <div className="mt-1 flex items-baseline gap-1.5">
-            <span className="text-lg font-bold text-ink-muted">{summary.shutInWells}</span>
-            <span className="text-[10px] text-ink-muted">workover</span>
           </div>
         </div>
 

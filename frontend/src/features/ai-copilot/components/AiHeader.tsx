@@ -1,7 +1,6 @@
 import React from 'react';
-import { Bot, X, Trash2, Database } from 'lucide-react';
+import { Bot, X, Trash2 } from 'lucide-react';
 import { AiUiContext } from '../types/ai';
-import { getAiDataProvider } from '../data/createAiDataProvider';
 
 interface AiHeaderProps {
   uiContext: AiUiContext;
@@ -16,8 +15,6 @@ export const AiHeader: React.FC<AiHeaderProps> = ({
   onClose,
   onClear,
 }) => {
-  const provider = getAiDataProvider();
-
   return (
     <div className="p-4 border-b border-border bg-surface-secondary/80 flex items-center justify-between select-none">
       <div className="flex items-center gap-2.5">
@@ -35,11 +32,6 @@ export const AiHeader: React.FC<AiHeaderProps> = ({
             <span className="font-semibold text-ink">{wellCode}</span>
             <span>·</span>
             <span className="capitalize">{uiContext.currentPage}</span>
-            <span>·</span>
-            <span className="inline-flex items-center gap-1 text-[10px] text-ink-muted">
-              <Database className="w-2.5 h-2.5" />
-              <span>{provider.mode === 'api' ? 'Live API' : 'Demo Data'}</span>
-            </span>
           </div>
         </div>
       </div>

@@ -12,43 +12,21 @@ export class GeminiProvider implements AiProvider {
   async generateResponse(prompt: string, context: AiContext): Promise<AiResponse> {
     const currentWellId = context.well?.id || context.ui.currentWellId || 'well-bw-017';
 
-    // 1. First try calling the FastAPI backend endpoint if in API mode or reachable
-    try {
-      const backendRes = await apiFetch<any>('/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: prompt,
-          well_id: currentWellId,
-          current_route: context.ui.currentPage,
-          active_tab: context.ui.currentSection,
-          context: {
-            ui: context.ui,
-            well: context.well,
-            telemetry: context.telemetry,
-          },
-        }),
-      });
+    // 1. Check for optional developer client key in .env (VITE_GEMINI_API_KEY) or window
+    const clientApiKey =
+      (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_API_KEY) ||
+      (typeof window !== 'undefined' && (window as any).__GEMINI_API_KEY__);
 
-      if (backendRes && (backendRes.answer || backendRes.message)) {
-        return validateAiResponse(backendRes, currentWellId);
-      }
-    } catch {
-      // Backend not running or endpoint not yet configured, proceed to client-side dev key or fallback
-    }
-
-    // 2. Check for optional developer client key in .env (VITE_GEMINI_API_KEY)
-    const clientApiKey = import.meta.env.VITE_GEMINI_API_KEY;
     if (clientApiKey && typeof clientApiKey === 'string' && clientApiKey.trim().length > 0) {
       try {
         const response = await this.callGeminiDirect(prompt, context, clientApiKey.trim());
         return validateAiResponse(response, currentWellId);
       } catch (err) {
-        console.warn('Direct Gemini API call failed, falling back to deterministic engineering engine:', err);
+        console.warn('[GeminiProvider] Direct Gemini API call failed, falling back to deterministic engineering engine:', err);
       }
     }
 
-    // 3. Fall back gracefully to deterministic engineering provider
+    // 2. Fall back gracefully to deterministic multi-physics engineering provider
     return this.mockFallback.generateResponse(prompt, context);
   }
 
@@ -88,7 +66,8 @@ Respond ONLY with a JSON object matching this schema:
       uiContext: context.ui,
     };
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const model = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_MODEL) || 'gemini-1.5-flash';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const res = await fetch(url, {
       method: 'POST',
@@ -116,13 +95,27 @@ Respond ONLY with a JSON object matching this schema:
     });
 
     if (!res.ok) {
-      throw new Error(`Gemini API HTTP ${res.status}: ${res.statusText}`);
+      let errText = '';
+      try {
+        const errJson = await res.json();
+        errText = errJson.error?.message || res.statusText;
+      } catch {
+        errText = res.statusText;
+      }
+      throw new Error(`Gemini API HTTP ${res.status}: ${errText}`);
     }
 
     const data = await res.json();
     const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!rawText) throw new Error('Empty response from Gemini');
 
-    return JSON.parse(rawText);
+    let cleanedText = rawText.trim();
+    if (cleanedText.startsWith('```json')) {
+      cleanedText = cleanedText.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    } else if (cleanedText.startsWith('```')) {
+      cleanedText = cleanedText.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+
+    return JSON.parse(cleanedText);
   }
 }
