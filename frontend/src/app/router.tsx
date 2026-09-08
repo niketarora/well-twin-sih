@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
+import { LandingPage } from '../pages/LandingPage';
 import { HomePage } from '../pages/HomePage';
 import { OverviewPage } from '../pages/OverviewPage';
 import { DigitalTwinOverviewPage } from '../pages/DigitalTwinOverviewPage';
@@ -23,10 +24,18 @@ import { WorkOrdersPage } from '../pages/WorkOrdersPage';
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <LandingPage />,
+  },
+  {
+    path: '/landing',
+    element: <LandingPage />,
+  },
+  {
+    path: '/',
     element: <AppLayout />,
     children: [
       {
-        index: true,
+        path: 'field-map',
         element: <HomePage />,
       },
       {
