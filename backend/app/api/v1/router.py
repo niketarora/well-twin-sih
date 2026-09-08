@@ -18,6 +18,7 @@ from app.api.v1 import (
     voice,
     navigator,
     field,
+    srp,
 )
 
 api_router = APIRouter()
@@ -37,6 +38,7 @@ api_router.include_router(work_orders.router, tags=["Work Orders"])
 api_router.include_router(twin.router, tags=["Digital Twin"])
 api_router.include_router(sos.router, tags=["Manual SOS"])
 api_router.include_router(incidents.router, tags=["Incidents"])
+api_router.include_router(srp.router, prefix="/srp", tags=["SRP ML"])
 api_router.include_router(ai.router, prefix="/ai", tags=["AI Copilot"])
 api_router.include_router(voice.router, prefix="/voice", tags=["Voice (Sarvam STT/TTS)"])
 api_router.include_router(navigator.router, prefix="/ai", tags=["AI Navigator"])

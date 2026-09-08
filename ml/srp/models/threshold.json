@@ -1,0 +1,15 @@
+{
+    "warning_threshold": 0.0012755682691931725,
+    "critical_threshold": 0.0077781276777386665,
+    "features": [
+        "SPM",
+        "pump_fillage",
+        "min_rod_weight",
+        "max_rod_weight",
+        "dynamometer_area",
+        "rod_load_range"
+    ],
+    "training_samples": 22702,
+    "wells": 7,
+    "best_training_loss": 0.0008397411606791946
+}
