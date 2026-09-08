@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowRight, AlertTriangle, Download, Cpu, TrendingUp, CheckCircle, BarChart3, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
+import { ArrowRight, AlertTriangle, Download, TrendingUp, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { HealthScore } from '../components/ui/HealthScore';
 import { KpiCard } from '../components/ui/KpiCard';
@@ -14,6 +15,21 @@ import { wellService, telemetryService, alertService, generateOperationalLogPdf 
 import { Well, WellHealth, KpiCardData, Alert } from '../types';
 import { useUIStore } from '../stores/useUIStore';
 import { useAiCopilot } from '../features/ai-copilot';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.25 } },
+};
 
 export const OverviewPage: React.FC = () => {
   const navigate = useNavigate();
@@ -160,38 +176,52 @@ export const OverviewPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-5">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-5"
+    >
       {/* Page Title & Workstation Quick Actions */}
-      <SectionHeader
-        title="Well Twin Command Center"
-        subtitle={`Real-time multi-physics surveillance, physical cause chain attribution, and predicted vs actual production reconcile for ${well?.code || 'BW-017'}.`}
-        actions={
-          <>
-            <button
-              type="button"
-              disabled={isExporting}
-              onClick={handleExportOperationalLog}
-              className="h-8 px-3 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-medium flex items-center gap-1.5 transition-colors shadow-subtle disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Download print-ready A4 operational engineering report"
-            >
-              <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce text-petroleum dark:text-cyan-400' : ''}`} />
-              <span>{isExporting ? 'Generating Operational Log...' : 'Export Operational Log'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/alerts')}
-              className="h-8 px-3 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-semibold tracking-wide flex items-center gap-1.5 shadow-sm transition-colors"
-            >
-              <span>Review {alerts.length || 3} Active Alerts</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </>
-        }
-      />
+      <motion.div variants={itemVariants}>
+        <SectionHeader
+          title="Well Twin Command Center"
+          subtitle={`Real-time multi-physics surveillance, physical cause chain attribution, and predicted vs actual production reconcile for ${well?.code || 'BW-017'}.`}
+          actions={
+            <>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                type="button"
+                disabled={isExporting}
+                onClick={handleExportOperationalLog}
+                className="h-8 px-3 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-medium flex items-center gap-1.5 transition-colors shadow-subtle disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Download print-ready A4 operational engineering report"
+              >
+                <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce text-petroleum dark:text-cyan-400' : ''}`} />
+                <span>{isExporting ? 'Generating Operational Log...' : 'Export Operational Log'}</span>
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                type="button"
+                onClick={() => navigate('/alerts')}
+                className="h-8 px-3 rounded-lg bg-petroleum hover:bg-petroleum-hover text-white text-xs font-bold tracking-wide flex items-center gap-1.5 shadow-sm transition-all"
+              >
+                <span>Review {alerts.length || 3} Active Alerts</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </motion.button>
+            </>
+          }
+        />
+      </motion.div>
 
       {/* Export Feedback Toast / Banner */}
       {exportNotification && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
           className={`px-4 py-2.5 rounded-lg border flex items-center justify-between text-xs font-medium transition-all ${
             exportNotification.type === 'success'
               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300'
@@ -213,38 +243,44 @@ export const OverviewPage: React.FC = () => {
           >
             Dismiss
           </button>
-        </div>
+        </motion.div>
       )}
 
       {/* Engineering Cause-and-Effect Propagation Chain */}
-      <CauseChain />
+      <motion.div variants={itemVariants}>
+        <CauseChain />
+      </motion.div>
 
       {/* Well Health & Subsystem Health Strip */}
-      <HealthScore health={health} />
+      <motion.div variants={itemVariants}>
+        <HealthScore health={health} />
+      </motion.div>
 
       {/* Key Engineering KPIs with Provenance Badges */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
         {kpis.map((kpi) => (
           <KpiCard key={kpi.id} kpi={kpi} />
         ))}
-      </div>
+      </motion.div>
 
       {/* Model Health & Drift Panel */}
-      <ModelHealthDrift />
+      <motion.div variants={itemVariants}>
+        <ModelHealthDrift />
+      </motion.div>
 
       {/* Two Columns: Predicted vs Actual Production Chart & Top Alert Triage */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* Left: Predicted vs Actual 14-Day Production Chart with Confidence Band */}
-        <section className="lg:col-span-7 bg-surface border border-border rounded-xl p-5 shadow-subtle flex flex-col justify-between">
+        <section className="lg:col-span-7 glass-panel rounded-xl p-5 shadow-card flex flex-col justify-between">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-border gap-2">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-heading text-base font-semibold text-ink">
+                <h2 className="font-heading text-base font-bold text-ink">
                   Predicted vs Actual Production
                 </h2>
                 <DataProvenanceBadge type="ACTUAL" size="sm" />
               </div>
-              <p className="text-xs text-ink-muted mt-0.5">
+              <p className="text-xs text-ink-muted mt-0.5 font-medium">
                 BOPD · Last 14 days · Reconciled Coriolis Skid 03 vs Coupled Multi-Physics Simulation
               </p>
             </div>
@@ -355,95 +391,99 @@ export const OverviewPage: React.FC = () => {
 
         {/* Right: Top Alert Attention Triage Card */}
         {topAlert && (
-          <section className="lg:col-span-5 bg-surface border border-border border-l-4 border-l-status-crit rounded-xl p-5 shadow-subtle flex flex-col justify-between">
+          <section className="lg:col-span-5 glass-panel border-l-4 border-l-status-crit rounded-xl p-5 shadow-card flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-semibold tracking-wider uppercase text-status-crit flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-status-crit" />
+                <span className="text-[10px] font-extrabold tracking-wider uppercase text-status-crit flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-status-crit animate-pulse" />
                   Engineering Priority Triage · 1 of {alerts.length || 3} Active
                 </span>
-                <span className="font-mono text-[11px] text-ink-muted">
+                <span className="font-mono text-[11px] font-semibold text-ink-muted">
                   {topAlert.timestamp}
                 </span>
               </div>
 
-              <h2 className="font-heading text-base font-semibold text-ink mt-3">
+              <h2 className="font-heading text-base font-bold text-ink mt-3">
                 {topAlert.title}
               </h2>
-              <p className="text-xs text-ink-secondary mt-1.5 leading-relaxed">
+              <p className="text-xs text-ink-secondary mt-1.5 leading-relaxed font-medium">
                 {topAlert.what}
               </p>
 
               <dl className="mt-4 pt-3 border-t border-border-subtle grid grid-cols-[72px_1fr] gap-x-2 gap-y-2 text-xs">
-                <dt className="font-semibold text-ink-muted text-[10.5px] uppercase tracking-wider">Physics Cause</dt>
-                <dd className="text-ink leading-snug">{topAlert.why}</dd>
+                <dt className="font-bold text-ink-muted text-[10px] uppercase tracking-wider">Physics Cause</dt>
+                <dd className="text-ink leading-snug font-medium">{topAlert.why}</dd>
 
-                <dt className="font-semibold text-ink-muted text-[10.5px] uppercase tracking-wider">Mitigation</dt>
-                <dd className="text-ink leading-snug">{topAlert.action}</dd>
+                <dt className="font-bold text-ink-muted text-[10px] uppercase tracking-wider">Mitigation</dt>
+                <dd className="text-ink leading-snug font-medium">{topAlert.action}</dd>
               </dl>
             </div>
 
             <div className="mt-5 pt-3 border-t border-border-subtle flex flex-col gap-2">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 type="button"
                 onClick={() =>
                   openWithPrompt(
                     `Investigate alert ${topAlert.id} (${topAlert.title}): ${topAlert.what}. What is the root cause across the 4 twins and what immediate mitigation is recommended?`
                   )
                 }
-                className="w-full h-8 rounded-lg bg-petroleum/10 hover:bg-petroleum/20 text-petroleum dark:text-cyan-300 border border-petroleum/30 text-xs font-semibold flex items-center justify-between px-3 transition-colors shadow-subtle"
+                className="w-full h-8.5 rounded-lg bg-petroleum/10 hover:bg-petroleum/20 text-petroleum dark:text-cyan-300 border border-petroleum/40 text-xs font-bold flex items-center justify-between px-3 transition-colors shadow-2xs"
               >
                 <span className="flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-petroleum dark:text-cyan-400" />
                   <span>Investigate with AI Copilot</span>
                 </span>
                 <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 type="button"
                 onClick={() => navigate('/alerts')}
-                className="w-full h-8 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-semibold flex items-center justify-between px-3 transition-colors"
+                className="w-full h-8.5 rounded-lg border border-border bg-surface hover:bg-surface-secondary text-ink text-xs font-bold flex items-center justify-between px-3 transition-colors"
               >
                 <span>Acknowledge & Open Alert Triage</span>
                 <ArrowRight className="w-3.5 h-3.5 text-ink-muted" />
-              </button>
+              </motion.button>
             </div>
           </section>
         )}
-      </div>
+      </motion.div>
 
       {/* Real-Time Telemetry Trend Previews */}
-      <section className="bg-surface border border-border rounded-xl p-5 shadow-subtle">
+      <motion.section variants={itemVariants} className="glass-panel rounded-xl p-5 shadow-card">
         <div className="flex items-center justify-between pb-3 border-b border-border mb-4">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-petroleum" />
-            <h2 className="font-heading text-sm font-semibold text-ink">
+            <h2 className="font-heading text-sm font-bold text-ink">
               Multi-Physics Parameter Telemetry Previews
             </h2>
           </div>
-          <span className="text-[11px] text-ink-muted">
+          <span className="text-[11px] font-medium text-ink-muted">
             Continuous 6h trend · Full analytics in Trends & Well State
           </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5">
-          <div className="p-3.5 rounded-lg bg-surface-secondary border border-border-subtle flex flex-col justify-between">
+          <motion.div whileHover={{ y: -2 }} className="p-3.5 rounded-lg bg-surface-secondary/70 border border-border-subtle flex flex-col justify-between transition-all hover:border-status-warn/50">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-ink-secondary">Bottomhole Temperature</span>
+              <span className="text-[11px] font-bold text-ink-secondary">Bottomhole Temperature</span>
               <DataProvenanceBadge type="OBSERVED" size="sm" />
             </div>
             <div className="flex items-baseline justify-between mt-2">
-              <span className="font-mono text-base font-bold text-ink">
+              <span className="font-mono text-base font-black text-ink">
                 214.8 <span className="text-[10px] text-ink-muted">°C</span>
               </span>
               <Sparkline data={[215.8, 215.6, 215.5, 215.3, 215.2, 215.0, 214.9, 214.8]} color="var(--status-warn)" />
             </div>
-            <span className="text-[10.5px] text-ink-muted mt-1">−1.0 °C over 48 h (cooling)</span>
-          </div>
+            <span className="text-[10.5px] text-ink-muted mt-1 font-medium">−1.0 °C over 48 h (cooling)</span>
+          </motion.div>
 
-          <div className="p-3.5 rounded-lg bg-surface-secondary border border-border-subtle flex flex-col justify-between">
+          <motion.div whileHover={{ y: -2 }} className="p-3.5 rounded-lg bg-surface-secondary/70 border border-border-subtle flex flex-col justify-between transition-all hover:border-petroleum/50">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-ink-secondary">In-Situ Viscosity</span>
+              <span className="text-[11px] font-bold text-ink-secondary">In-Situ Viscosity</span>
               <DataProvenanceBadge type="ESTIMATED" size="sm" />
             </div>
             <div className="flex items-baseline justify-between mt-2">
@@ -452,12 +492,12 @@ export const OverviewPage: React.FC = () => {
               </span>
               <Sparkline data={[80.5, 81.2, 81.8, 82.4, 82.9, 83.4, 83.8, 84.0]} color="var(--status-warn)" />
             </div>
-            <span className="text-[10.5px] text-ink-muted mt-1">+3.5 cP over 48 h</span>
-          </div>
+            <span className="text-[10.5px] text-ink-muted mt-1 font-medium">+3.5 cP over 48 h</span>
+          </motion.div>
 
-          <div className="p-3.5 rounded-lg bg-surface-secondary border border-border-subtle flex flex-col justify-between">
+          <motion.div whileHover={{ y: -2 }} className="p-3.5 rounded-lg bg-surface-secondary/70 border border-border-subtle flex flex-col justify-between transition-all hover:border-status-info/50">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-ink-secondary">Gross Liquid Rate</span>
+              <span className="text-[11px] font-bold text-ink-secondary">Gross Liquid Rate</span>
               <DataProvenanceBadge type="OBSERVED" size="sm" />
             </div>
             <div className="flex items-baseline justify-between mt-2">
@@ -466,24 +506,25 @@ export const OverviewPage: React.FC = () => {
               </span>
               <Sparkline data={[321.4, 320.8, 321.0, 320.6, 320.2, 320.4, 320.1, 320.0]} color="var(--status-info)" />
             </div>
-            <span className="text-[10.5px] text-ink-muted mt-1">Stable within 0.5%</span>
-          </div>
+            <span className="text-[10.5px] text-ink-muted mt-1 font-medium">Stable within 0.5%</span>
+          </motion.div>
 
-          <div className="p-3.5 rounded-lg bg-surface-secondary border border-border-subtle flex flex-col justify-between border-l-2 border-l-status-crit">
+          <motion.div whileHover={{ y: -2 }} className="p-3.5 rounded-lg bg-surface-secondary/70 border border-border-subtle flex flex-col justify-between border-l-2 border-l-status-crit transition-all hover:border-status-crit">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-ink-secondary">Pump Fillage</span>
+              <span className="text-[11px] font-bold text-ink-secondary">Pump Fillage</span>
               <DataProvenanceBadge type="ACTUAL" size="sm" />
             </div>
             <div className="flex items-baseline justify-between mt-2">
-              <span className="font-mono text-base font-bold text-status-crit">
+              <span className="font-mono text-base font-black text-status-crit">
                 84.6 <span className="text-[10px] text-ink-muted">%</span>
               </span>
               <Sparkline data={[88.2, 87.4, 87.0, 86.1, 85.6, 85.0, 84.8, 84.6]} color="var(--status-crit)" />
             </div>
-            <span className="text-[10.5px] text-status-crit mt-1">Declining (Fluid Pound @ 2.80m)</span>
-          </div>
+            <span className="text-[10.5px] text-status-crit font-bold mt-1">Declining (Fluid Pound @ 2.80m)</span>
+          </motion.div>
         </div>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 };
+
