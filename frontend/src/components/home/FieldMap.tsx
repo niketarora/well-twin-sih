@@ -438,14 +438,8 @@ export const FieldMap: React.FC<FieldMapProps> = ({
         </button>
       </div>
 
-      {/* North Compass Indicator */}
-      <div className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface/80 backdrop-blur-md border border-border text-ink text-[10px] font-semibold tracking-wider shadow-sm">
-        <Compass className="w-3.5 h-3.5 text-petroleum dark:text-cyan-400 animate-spin-slow" />
-        <span>N 27°32' · E 72°09'</span>
-      </div>
-
-      {/* Bottom Map Legend */}
-      <div className="absolute bottom-4 left-4 z-10 hidden sm:block">
+      {/* Bottom Map Legend with Integrated Coordinates (Positioned bottom-right to eliminate overlap with WellPopup) */}
+      <div className="absolute bottom-4 right-4 z-10 hidden sm:block">
         <FieldMapLegend activeLayer={activeLayer} />
       </div>
     </div>

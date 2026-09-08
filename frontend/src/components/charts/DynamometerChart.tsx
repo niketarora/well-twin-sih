@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { mockDynoLoops } from '../../mock/digitalTwin/srp';
 import { DataProvenanceBadge } from '../ui/DataProvenanceBadge';
-import { Activity, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Activity, AlertTriangle, CheckCircle, Sparkles } from 'lucide-react';
+import { useAiCopilot } from '../../features/ai-copilot/hooks/useAiCopilot';
 
 interface DynamometerChartProps {
   className?: string;
 }
 
 export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = '' }) => {
+  const { openWithPrompt } = useAiCopilot();
   const [selectedLoopKey, setSelectedLoopKey] = useState<'current' | 'previous' | 'baseline'>('current');
   const [showSurface, setShowSurface] = useState(true);
   const [showDownhole, setShowDownhole] = useState(true);
@@ -163,6 +165,20 @@ export const DynamometerChart: React.FC<DynamometerChartProps> = ({ className = 
               Pre-Steam Baseline
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              openWithPrompt(
+                `Explain the full-cycle dynamometer load card for well BW-017 (${currentLoop.label}). What is the physical mechanism causing ${diagnosticData.cardClassification} at ${diagnosticData.inception}, and what VFD SPM adjustment is recommended?`
+              )
+            }
+            className="h-7 px-2.5 rounded-lg bg-surface border border-petroleum/30 text-petroleum hover:bg-petroleum/10 dark:text-cyan-400 dark:border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs"
+            title="Explain Dynamometer Card with AI"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-petroleum dark:text-cyan-400" />
+            <span className="hidden md:inline">Explain Card with AI</span>
+          </button>
         </div>
       </div>
 

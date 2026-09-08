@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AlertTriangle, CheckCircle2, ShieldCheck, Clock, ChevronDown, ChevronUp, Check, RefreshCw, Gauge, ArrowRight } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ShieldCheck, Clock, ChevronDown, ChevronUp, Check, RefreshCw, Gauge, ArrowRight, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { SeverityBadge } from '../components/ui/SeverityBadge';
@@ -8,6 +8,7 @@ import { DataProvenanceBadge } from '../components/ui/DataProvenanceBadge';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { EmptyState } from '../components/ui/EmptyState';
 import { useAlertStore } from '../stores/useAlertStore';
+import { useAiCopilot } from '../features/ai-copilot/hooks/useAiCopilot';
 
 export const AlertsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export const AlertsPage: React.FC = () => {
     acknowledgeAlert,
     resolveAlert,
   } = useAlertStore();
+  const { openWithPrompt } = useAiCopilot();
 
   const [expandedAlerts, setExpandedAlerts] = useState<Record<string, boolean>>({
     'ALM-4415': true,
@@ -234,6 +236,20 @@ export const AlertsPage: React.FC = () => {
 
                   {/* Action Buttons */}
                   <div className="flex items-center gap-2 shrink-0 self-end md:self-start">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openWithPrompt(
+                          `Investigate alert ${alert.id}: ${alert.title}. What is the root cause across the 4 twins and what immediate mitigation is recommended?`
+                        )
+                      }
+                      className="h-8 px-2.5 rounded-lg bg-surface border border-petroleum/30 text-petroleum hover:bg-petroleum/10 dark:text-cyan-400 dark:border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-2xs"
+                      title="Investigate with AI"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-petroleum dark:text-cyan-400" />
+                      <span className="hidden sm:inline">Investigate with AI</span>
+                    </button>
+
                     {!isAcked && !isResolved && (
                       <button
                         type="button"
@@ -286,13 +302,27 @@ export const AlertsPage: React.FC = () => {
                           <p className="text-xs text-ink font-medium leading-relaxed">
                             {alert.action}
                           </p>
-                          <button
-                            type="button"
-                            onClick={() => navigate('/recommendations')}
-                            className="h-7 px-2.5 rounded bg-petroleum text-white text-xs font-semibold shrink-0 hover:bg-petroleum-hover transition-colors"
-                          >
-                            Execute
-                          </button>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openWithPrompt(
+                                  `Investigate alert ${alert.id}: ${alert.title}. Detail the operational impact: "${alert.why}", and explain step-by-step how to execute the recommended mitigation.`
+                                )
+                              }
+                              className="h-7 px-2 rounded bg-surface border border-petroleum/30 text-petroleum hover:bg-petroleum/10 dark:text-cyan-400 dark:border-cyan-500/30 text-xs font-medium flex items-center gap-1 transition-colors"
+                            >
+                              <Sparkles className="w-3 h-3 text-petroleum dark:text-cyan-400" />
+                              <span>AI Deep-Dive</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => navigate('/recommendations')}
+                              className="h-7 px-2.5 rounded bg-petroleum text-white text-xs font-semibold shrink-0 hover:bg-petroleum-hover transition-colors"
+                            >
+                              Execute
+                            </button>
+                          </div>
                         </div>
                       </div>
 
