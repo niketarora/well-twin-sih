@@ -29,6 +29,25 @@ export const LandingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'thermal' | 'srp' | 'twin' | 'ai'>('thermal');
   const [fontSize, setFontSize] = useState<'small' | 'normal' | 'large'>('normal');
 
+  useEffect(() => {
+    // Ensure clean light theme is active for the landing page
+    document.documentElement.classList.remove('dark');
+
+    // Dynamically scale root document font size so ALL Tailwind rem utilities scale
+    if (fontSize === 'small') {
+      document.documentElement.style.fontSize = '85%';
+    } else if (fontSize === 'large') {
+      document.documentElement.style.fontSize = '118%';
+    } else {
+      document.documentElement.style.fontSize = '100%';
+    }
+
+    return () => {
+      // Reset root font size on unmount
+      document.documentElement.style.fontSize = '';
+    };
+  }, [fontSize]);
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
