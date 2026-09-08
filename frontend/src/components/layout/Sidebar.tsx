@@ -121,10 +121,10 @@ export const Sidebar: React.FC = () => {
             </div>
             {!sidebarCollapsed && (
               <div className="flex flex-col leading-tight overflow-hidden">
-                <span className="font-heading font-bold text-xs tracking-wider text-ink">
+                <span className="font-heading font-extrabold text-xs tracking-wider text-ink">
                   WELL TWIN
                 </span>
-                <span className="text-[9.5px] tracking-wider uppercase text-ink-muted truncate">
+                <span className="text-[9.5px] font-bold tracking-wider uppercase text-petroleum truncate">
                   Engineering Workstation
                 </span>
               </div>
@@ -155,13 +155,16 @@ export const Sidebar: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => toggleSection(section.label)}
-                    className="w-full flex items-center justify-between px-3.5 py-1.5 text-[9.5px] font-semibold tracking-wider text-ink-muted hover:text-ink uppercase transition-colors"
+                    className="w-full flex items-center justify-between px-3.5 py-2 text-[11px] tracking-wider uppercase transition-colors group"
                   >
-                    <span>{section.label}</span>
+                    <span className="font-heading font-extrabold tracking-widest text-ink dark:text-slate-100 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-sm bg-petroleum inline-block" />
+                      <span>{section.label}</span>
+                    </span>
                     {isOpen ? (
-                      <ChevronDown className="w-3 h-3" />
+                      <ChevronDown className="w-3.5 h-3.5 text-ink-muted group-hover:text-ink transition-transform" />
                     ) : (
-                      <ChevronRight className="w-3 h-3" />
+                      <ChevronRight className="w-3.5 h-3.5 text-ink-muted group-hover:text-ink transition-transform" />
                     )}
                   </button>
                 ) : (
@@ -172,9 +175,23 @@ export const Sidebar: React.FC = () => {
                   <div className="flex flex-col">
                     {section.items.map((item) => {
                       const Icon = item.icon;
-                      const isActive =
-                        location.pathname === item.path ||
-                        (item.path === '/overview' && location.pathname === '/');
+                      
+                      // Precise route active matching: Field Map ('/') only matches root '/'
+                      const isFieldMap = item.path === '/';
+                      let isActive = false;
+                      if (isFieldMap) {
+                        isActive = location.pathname === '/';
+                      } else if (item.path === '/overview') {
+                        isActive =
+                          location.pathname === '/overview' ||
+                          location.pathname.endsWith('/overview') ||
+                          (/^\/well\/[^/]+$/.test(location.pathname));
+                      } else {
+                        const sectionKey = item.path.replace('/', '');
+                        isActive =
+                          location.pathname === item.path ||
+                          location.pathname.includes(`/${sectionKey}`);
+                      }
 
                       return (
                         <NavLink

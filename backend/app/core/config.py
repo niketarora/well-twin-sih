@@ -35,6 +35,15 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: str = ""
     SUPABASE_DB_URL: str = ""
 
+    # Gemini AI configuration
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-1.5-flash"
+
+    # Sarvam AI Voice configuration (Saaras STT & Bulbul TTS)
+    SARVAM_API_KEY: str = ""
+    SARVAM_MODEL_STT: str = "saaras:v1"
+    SARVAM_MODEL_TTS: str = "bulbul:v1"
+
     # Primary Database URL: uses SUPABASE_DB_URL if set, else falls back to DATABASE_URL or SQLite
     DATABASE_URL: str = "sqlite+aiosqlite:///./well_twin.db"
 
