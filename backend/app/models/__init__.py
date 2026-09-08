@@ -10,6 +10,9 @@ from .anomaly import Anomaly
 from .insight import AiInsight
 from .recommendation import Recommendation
 from .work_order import WorkOrder
+from .incident import Incident
+from .contact import Contact
+from .notification_log import NotificationLog
 
 __all__ = [
     "Base",
@@ -25,4 +28,7 @@ __all__ = [
     "AiInsight",
     "Recommendation",
     "WorkOrder",
+    "Incident",
+    "Contact",
+    "NotificationLog",
 ]
