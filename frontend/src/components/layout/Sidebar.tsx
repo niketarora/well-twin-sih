@@ -62,8 +62,9 @@ export const Sidebar: React.FC = () => {
     {
       label: 'MONITORING',
       items: [
-        { id: 'field-map', label: 'Field Map', path: '/', icon: Map },
-        { id: 'overview', label: 'Overview', path: '/overview', icon: LayoutDashboard },
+        { id: 'gov-portal', label: 'Gov Portal / SIH', path: '/landing', icon: Map },
+        { id: 'field-map', label: 'Field Map', path: '/field-map', icon: Sliders },
+        { id: 'overview', label: 'Overview Command', path: '/overview', icon: LayoutDashboard },
         { id: 'well-state', label: 'Well State', path: '/well-state', icon: Sliders },
         { id: 'trends', label: 'Trends & Analytics', path: '/trends', icon: LineChart },
         { id: 'css-cycle', label: 'CSS Cycle Tracker', path: '/css-cycle', icon: Flame },
