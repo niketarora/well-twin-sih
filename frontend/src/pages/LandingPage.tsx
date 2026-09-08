@@ -15,8 +15,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Import local government emblem & partner marquee logos
+// Import local government emblem, Oil India Limited logo & partner marquee logos
 import ministryEmblem from '../WhatsApp Image 2026-09-08 at 10.19.44 AM.jpeg';
+import oilIndiaLogo from '../oilinidailogo.jpeg';
 import m1 from '../m1.jpeg';
 import m2 from '../m2.jpeg';
 import m7 from '../m7.jpeg';
@@ -118,17 +119,25 @@ export const LandingPage: React.FC = () => {
       {/* 1. Official Indian Government Top Bar (Rich Emerald Header) */}
       <div className="bg-[#047857] text-white text-xs px-4 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-3">
-          <img
-            src={ministryEmblem}
-            alt="Ministry Emblem"
-            className="h-9 w-auto object-contain rounded bg-white p-0.5 shadow-2xs"
-          />
+          <div className="flex items-center gap-2 bg-white/95 p-1 rounded shadow-2xs">
+            <img
+              src={ministryEmblem}
+              alt="Ministry Emblem"
+              className="h-8 w-auto object-contain"
+            />
+            <div className="w-px h-6 bg-slate-300" />
+            <img
+              src={oilIndiaLogo}
+              alt="Oil India Limited Logo"
+              className="h-8 w-auto object-contain"
+            />
+          </div>
           <div className="flex flex-col leading-tight">
             <span className="font-extrabold text-xs tracking-wide text-white">
               भारत सरकार | Government of India
             </span>
             <span className="text-[11px] font-semibold text-emerald-100">
-              पेट्रोलियम एवं प्राकृतिक गैस मंत्रालय | Ministry of Petroleum & Natural Gas
+              ऑयल इंडिया लिमिटेड · पेट्रोलियम एवं प्राकृतिक गैस मंत्रालय | Oil India Limited
             </span>
           </div>
         </div>
@@ -158,13 +167,13 @@ export const LandingPage: React.FC = () => {
       </div>
 
       {/* 2. Pure White Surface Header Navbar */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E2E6EA] px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-subtle">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E2E6EA] px-4 lg:px-8 py-3 flex items-center justify-between shadow-subtle">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C69A45] to-[#8A6A22] p-0.5 shadow-md shadow-amber-600/20">
-            <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center font-black text-[#C69A45] text-base tracking-tighter">
-              OIL
-            </div>
-          </div>
+          <img
+            src={oilIndiaLogo}
+            alt="Oil India Limited Logo"
+            className="h-10 w-auto object-contain rounded-xl border border-[#E2E6EA] p-1 bg-white shadow-2xs"
+          />
           <div className="flex flex-col leading-tight">
             <span className="font-black text-sm md:text-base tracking-tight text-[#17212B] uppercase">
               WELL TWIN <span className="text-[#C69A45] font-extrabold text-xs">PORTAL</span>

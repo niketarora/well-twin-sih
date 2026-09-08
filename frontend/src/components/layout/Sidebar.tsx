@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { useAlertStore } from '../../stores/useAlertStore';
+import oilIndiaLogo from '../../oilinidailogo.jpeg';
 
 interface NavItem {
   id: string;
@@ -126,9 +127,9 @@ export const Sidebar: React.FC = () => {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-7 h-7 rounded border border-petroleum bg-petroleum/10 flex items-center justify-center font-heading font-extrabold text-xs text-petroleum shrink-0 shadow-xs"
+              className="w-8 h-8 rounded-lg border border-border bg-white flex items-center justify-center p-0.5 shrink-0 shadow-2xs"
             >
-              WT
+              <img src={oilIndiaLogo} alt="Oil India Limited" className="w-full h-full object-contain" />
             </motion.div>
             {!sidebarCollapsed && (
               <div className="flex flex-col leading-tight overflow-hidden">

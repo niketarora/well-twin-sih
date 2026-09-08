@@ -6,6 +6,7 @@ import { useUIStore } from '../../stores/useUIStore';
 import { mockWell, mockFieldWells } from '../../mock';
 import { EmergencySosControl } from '../sos/EmergencySosControl';
 import { useAiCopilot } from '../../features/ai-copilot';
+import oilIndiaLogo from '../../oilinidailogo.jpeg';
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -110,16 +111,16 @@ export const Header: React.FC = () => {
           <EmergencySosControl />
         </div>
 
-        {/* Indian Govt Portal Link Button */}
+        {/* Return to Landing Page Button */}
         <motion.button
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
           type="button"
           onClick={() => navigate('/landing')}
           className="h-8 px-2.5 rounded-lg border border-emerald-600/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 transition-all font-bold text-xs shadow-2xs shrink-0"
-          title="Return to Official Government Portal Landing Page"
+          title="Return to Official Oil India Government Portal Landing Page"
         >
-          <Landmark className="w-3.5 h-3.5" />
+          <img src={oilIndiaLogo} alt="OIL Logo" className="w-4 h-4 object-contain" />
           <span className="hidden md:inline text-[11px]">Gov Portal</span>
         </motion.button>
 
