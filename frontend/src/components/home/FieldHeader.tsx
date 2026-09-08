@@ -1,7 +1,6 @@
 import React from 'react';
 import { Layers, Activity, Droplets, AlertTriangle, CheckCircle2, ShieldAlert, Clock } from 'lucide-react';
 import { FieldSummary } from '../../types/field';
-import { DataProvenanceBadge } from '../ui/DataProvenanceBadge';
 
 interface FieldHeaderProps {
   summary: FieldSummary;
@@ -32,7 +31,6 @@ export const FieldHeader: React.FC<FieldHeaderProps> = ({ summary, onRefresh, is
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
-          <DataProvenanceBadge type="SYNTHETIC" />
           <button
             type="button"
             onClick={onRefresh}
