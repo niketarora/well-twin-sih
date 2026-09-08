@@ -27,7 +27,7 @@ import m9 from '../m9.jpeg';
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'thermal' | 'srp' | 'twin' | 'ai'>('thermal');
-  const [fontSize, setFontSize] = useState<'normal' | 'large'>('normal');
+  const [fontSize, setFontSize] = useState<'small' | 'normal' | 'large'>('normal');
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -113,9 +113,12 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className={`min-h-screen bg-[#F4F6F8] text-[#17212B] font-sans selection:bg-amber-500/20 ${
-      fontSize === 'large' ? 'text-base' : 'text-sm'
-    }`}>
+    <div
+      className={`min-h-screen bg-[#F4F6F8] text-[#17212B] font-sans selection:bg-amber-500/20 transition-all duration-200`}
+      style={{
+        fontSize: fontSize === 'small' ? '88%' : fontSize === 'large' ? '114%' : '100%',
+      }}
+    >
       {/* 0. Indian Flag Tricolor Top Accent Line */}
       <div className="h-1.5 w-full bg-gradient-to-r from-[#FF9933] via-white to-[#138808]" />
 
@@ -135,16 +138,35 @@ export const LandingPage: React.FC = () => {
         <div className="flex items-center gap-4 text-xs font-semibold text-emerald-100">
           <div className="flex items-center gap-1 font-mono text-[11px]">
             <button
+              onClick={() => setFontSize('small')}
+              className={`px-2 py-0.5 rounded transition-colors ${
+                fontSize === 'small'
+                  ? 'bg-emerald-950 text-white font-black ring-1 ring-white/60'
+                  : 'hover:bg-emerald-900/50 text-emerald-100'
+              }`}
+              title="Decrease text size (A-)"
+            >
+              A-
+            </button>
+            <button
               onClick={() => setFontSize('normal')}
-              className={`px-2 py-0.5 rounded ${fontSize === 'normal' ? 'bg-emerald-800 text-white font-bold' : 'hover:bg-emerald-900/50'}`}
-              title="Normal text size"
+              className={`px-2 py-0.5 rounded transition-colors ${
+                fontSize === 'normal'
+                  ? 'bg-emerald-950 text-white font-black ring-1 ring-white/60'
+                  : 'hover:bg-emerald-900/50 text-emerald-100'
+              }`}
+              title="Normal text size (A)"
             >
               A
             </button>
             <button
               onClick={() => setFontSize('large')}
-              className={`px-2 py-0.5 rounded ${fontSize === 'large' ? 'bg-emerald-800 text-white font-bold' : 'hover:bg-emerald-900/50'}`}
-              title="Large text size"
+              className={`px-2 py-0.5 rounded transition-colors ${
+                fontSize === 'large'
+                  ? 'bg-emerald-950 text-white font-black ring-1 ring-white/60'
+                  : 'hover:bg-emerald-900/50 text-emerald-100'
+              }`}
+              title="Increase text size (A+)"
             >
               A+
             </button>
